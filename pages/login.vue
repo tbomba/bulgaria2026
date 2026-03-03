@@ -104,7 +104,9 @@ const submit = async () => {
           class="btn-primary w-full !py-3 text-lg"
           :disabled="loading"
         >
-          {{ loading ? "..." : mode === "login" ? "Jedeme!" : "Registrovat" }}
+          {{
+            loading ? "..." : mode === "login" ? "Pokračovat" : "Registrovat"
+          }}
         </button>
       </form>
 
