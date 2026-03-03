@@ -5,8 +5,21 @@ const { places, loading, fetchPlaces, addPlace, toggleVote, updatePlace, deleteP
   usePlaces();
 
 const showForm = ref(false);
-const form = reactive({ name: "", description: "", image_url: "", href: "" });
+const form = reactive({ name: "", description: "", image_url: "", href: "", category: "main" });
 const submitting = ref(false);
+const activeFilter = ref("all");
+
+const categories = [
+  { value: "all", label: "Všechno" },
+  { value: "main", label: "Hlavní místečka" },
+  { value: "side", label: "Side questy" },
+  { value: "sleep", label: "Spaní" },
+];
+
+const filteredPlaces = computed(() => {
+  if (activeFilter.value === "all") return places.value;
+  return places.value.filter((p) => p.category === activeFilter.value);
+});
 
 onMounted(() => fetchPlaces());
 
@@ -19,8 +32,9 @@ const handleSubmit = async () => {
       description: form.description,
       image_url: form.image_url || undefined,
       href: form.href || undefined,
+      category: form.category,
     });
-    Object.assign(form, { name: "", description: "", image_url: "", href: "" });
+    Object.assign(form, { name: "", description: "", image_url: "", href: "", category: "main" });
     showForm.value = false;
   } catch (e: any) {
     alert(e.message);
@@ -79,11 +93,41 @@ const handleSubmit = async () => {
           placeholder="Odkaz / URL (nepovinné)"
           class="input-glass"
         />
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-neutral-400 font-medium">Kategorie:</label>
+          <button
+            v-for="cat in categories.slice(1)"
+            :key="cat.value"
+            type="button"
+            class="px-3 py-1.5 rounded-full text-xs font-medium transition-all border"
+            :class="form.category === cat.value
+              ? 'bg-white/15 text-white border-white/20'
+              : 'bg-white/[0.04] text-neutral-500 border-white/[0.08] hover:bg-white/[0.08]'"
+            @click="form.category = cat.value"
+          >
+            {{ cat.label }}
+          </button>
+        </div>
         <button type="submit" class="btn-primary" :disabled="submitting">
           {{ submitting ? "Přidávám..." : "Přidat místo" }}
         </button>
       </form>
     </Transition>
+
+    <!-- Category filter -->
+    <div class="flex flex-wrap items-center gap-2 mb-6">
+      <button
+        v-for="cat in categories"
+        :key="cat.value"
+        class="px-4 py-1.5 rounded-full text-sm font-medium transition-all border"
+        :class="activeFilter === cat.value
+          ? 'bg-white/15 text-white border-white/20'
+          : 'bg-white/[0.04] text-neutral-500 border-white/[0.08] hover:bg-white/[0.08] hover:text-neutral-300'"
+        @click="activeFilter = cat.value"
+      >
+        {{ cat.label }}
+      </button>
+    </div>
 
     <!-- Loading -->
     <div
@@ -94,15 +138,15 @@ const handleSubmit = async () => {
     </div>
 
     <!-- Empty -->
-    <div v-else-if="!places.length" class="text-center py-20">
+    <div v-else-if="!filteredPlaces.length" class="text-center py-20">
       <span class="text-5xl">🏖️</span>
-      <p class="text-neutral-500 mt-3">Zatím žádná místa. Přidej první!</p>
+      <p class="text-neutral-500 mt-3">Zatím žádná místa v této kategorii.</p>
     </div>
 
     <!-- Grid -->
     <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       <PlaceCard
-        v-for="place in places"
+        v-for="place in filteredPlaces"
         :key="place.id"
         :place="place"
         @vote="toggleVote"

@@ -20,7 +20,7 @@ export const usePlaces = () => {
     loading.value = false
   }
 
-  const addPlace = async (place: { name: string; description: string; image_url?: string; href?: string; lat?: number; lng?: number }) => {
+  const addPlace = async (place: { name: string; description: string; image_url?: string; href?: string; category?: string; lat?: number; lng?: number }) => {
     if (!userId.value) return
     const { error } = await supabase.from('places').insert({
       ...place,
@@ -41,7 +41,7 @@ export const usePlaces = () => {
     await fetchPlaces()
   }
 
-  const updatePlace = async (id: string, updates: { name?: string; description?: string; image_url?: string; href?: string }) => {
+  const updatePlace = async (id: string, updates: { name?: string; description?: string; image_url?: string; href?: string; category?: string }) => {
     const { error } = await supabase.from('places').update(updates).eq('id', id)
     if (error) throw error
     await fetchPlaces()

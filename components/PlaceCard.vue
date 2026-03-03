@@ -6,6 +6,7 @@ const props = defineProps<{
     description: string
     image_url: string | null
     href: string | null
+    category: string
     added_by: string
     created_at: string
     profiles?: { name: string } | null
@@ -18,7 +19,7 @@ const props = defineProps<{
 defineEmits<{
   vote: [id: string]
   delete: [id: string]
-  update: [id: string, updates: { name: string; description: string; image_url: string; href: string }]
+  update: [id: string, updates: { name: string; description: string; image_url: string; href: string; category: string }]
 }>()
 
 const userId = useUserId()
@@ -26,7 +27,15 @@ const { isAdmin } = useAuth()
 
 const canEdit = computed(() => userId.value === props.place.added_by || isAdmin.value)
 const editing = ref(false)
-const editForm = reactive({ name: '', description: '', image_url: '', href: '' })
+const editForm = reactive({ name: '', description: '', image_url: '', href: '', category: 'main' })
+
+const categories = [
+  { value: 'main', label: 'Hlavní místečka' },
+  { value: 'side', label: 'Side questy' },
+  { value: 'sleep', label: 'Spaní' },
+]
+
+const categoryLabel = computed(() => categories.find(c => c.value === props.place.category)?.label || '')
 
 const startEdit = () => {
   Object.assign(editForm, {
@@ -34,6 +43,7 @@ const startEdit = () => {
     description: props.place.description,
     image_url: props.place.image_url || '',
     href: props.place.href || '',
+    category: props.place.category || 'main',
   })
   editing.value = true
 }
@@ -46,6 +56,20 @@ const startEdit = () => {
     <textarea v-model="editForm.description" placeholder="Popis..." rows="2" class="input-glass text-sm resize-none" />
     <input v-model="editForm.image_url" type="url" placeholder="URL obrázku (nepovinné)" class="input-glass text-sm" />
     <input v-model="editForm.href" type="url" placeholder="Odkaz (nepovinné)" class="input-glass text-sm" />
+    <div class="flex items-center gap-1.5">
+      <button
+        v-for="cat in categories"
+        :key="cat.value"
+        type="button"
+        class="px-3 py-1.5 rounded-full text-xs font-medium transition-all border"
+        :class="editForm.category === cat.value
+          ? 'bg-white/15 text-white border-white/20'
+          : 'bg-white/[0.04] text-neutral-500 border-white/[0.08] hover:bg-white/[0.08]'"
+        @click="editForm.category = cat.value"
+      >
+        {{ cat.label }}
+      </button>
+    </div>
     <div class="flex gap-2 pt-1">
       <button class="btn-primary text-xs !py-1.5 !px-4" @click="$emit('update', place.id, { ...editForm }); editing = false">
         Uložit
@@ -73,6 +97,13 @@ const startEdit = () => {
       />
       <div v-else class="flex items-center justify-center h-full text-4xl">📍</div>
       <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent"></div>
+      <!-- Category badge -->
+      <span
+        v-if="categoryLabel"
+        class="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-black/50 backdrop-blur-sm text-neutral-300 border border-white/10"
+      >
+        {{ categoryLabel }}
+      </span>
     </div>
     <div class="p-4">
       <span class="font-heading font-bold text-lg text-white inline-flex items-center gap-1">
