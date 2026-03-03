@@ -89,6 +89,11 @@ const sections = computed(() => {
   ];
 });
 
+const handleTileTap = (e: Event, path: string) => {
+  (e.currentTarget as HTMLElement).classList.add("tile-pressed");
+  setTimeout(() => navigateTo(path), 200);
+};
+
 const statItems = computed(() => [
   { label: "Fotky", value: stats.value.photos, icon: "📸" },
   { label: "Místa", value: stats.value.places, icon: "📍" },
@@ -149,11 +154,12 @@ const statItems = computed(() => [
 
     <!-- Navigation Cards -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-      <NuxtLink
+      <div
         v-for="(section, i) in sections"
         :key="section.path"
-        :to="section.path"
-        class="tile-glow group p-4 sm:p-5 lg:p-6 flex flex-col justify-between relative overflow-hidden bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.08] transition-all duration-500 hover:-translate-y-1.5 min-h-[120px] sm:min-h-[150px]"
+        role="link"
+        class="tile-glow group p-4 sm:p-5 lg:p-6 flex flex-col justify-between relative overflow-hidden bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.08] transition-all duration-500 hover:-translate-y-1.5 min-h-[120px] sm:min-h-[150px] cursor-pointer"
+        @click="handleTileTap($event, section.path)"
         :class="[
           i === 0 ? 'col-span-2 sm:col-span-2 lg:col-span-3' : '',
           i === 1 ? 'col-span-1 sm:col-span-1 lg:col-span-3' : '',
@@ -205,7 +211,7 @@ const statItems = computed(() => [
             />
           </svg>
         </div>
-      </NuxtLink>
+      </div>
     </div>
   </div>
 </template>
