@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   proposal: {
     id: string
     title: string
@@ -17,10 +17,23 @@ defineEmits<{
   upvote: [id: string]
   downvote: [id: string]
   delete: [id: string]
+  update: [id: string, updates: { title: string; description: string }]
 }>()
 
 const userId = useUserId()
 const { isAdmin } = useAuth()
+
+const canEdit = computed(() => userId.value === props.proposal.proposed_by || isAdmin.value)
+const editing = ref(false)
+const editForm = reactive({ title: '', description: '' })
+
+const startEdit = () => {
+  Object.assign(editForm, {
+    title: props.proposal.title,
+    description: props.proposal.description,
+  })
+  editing.value = true
+}
 </script>
 
 <template>
@@ -63,20 +76,46 @@ const { isAdmin } = useAuth()
 
       <!-- Content -->
       <div class="flex-1 min-w-0">
-        <h3 class="font-heading font-bold text-lg text-white">{{ proposal.title }}</h3>
-        <p class="text-neutral-400 text-sm mt-1">{{ proposal.description }}</p>
-        <div class="flex items-center justify-between mt-3">
-          <span class="text-xs text-neutral-600">
-            od {{ proposal.profiles?.name || 'Neznámý' }}
-          </span>
-          <button
-            v-if="userId === proposal.proposed_by || isAdmin"
-            class="text-xs text-red-400/60 hover:text-red-400 transition-colors"
-            @click="$emit('delete', proposal.id)"
-          >
-            Smazat
-          </button>
+        <!-- Edit mode -->
+        <div v-if="editing" class="space-y-2">
+          <input v-model="editForm.title" type="text" placeholder="Název návrhu" class="input-glass text-sm" />
+          <textarea v-model="editForm.description" placeholder="Popis..." rows="2" class="input-glass text-sm resize-none" />
+          <div class="flex gap-2">
+            <button class="btn-primary text-xs !py-1.5 !px-4" @click="$emit('update', proposal.id, { ...editForm }); editing = false">
+              Uložit
+            </button>
+            <button class="text-xs text-neutral-500 hover:text-neutral-300 transition-colors" @click="editing = false">
+              Zrušit
+            </button>
+          </div>
         </div>
+
+        <!-- Display mode -->
+        <template v-else>
+          <h3 class="font-heading font-bold text-lg text-white">{{ proposal.title }}</h3>
+          <p class="text-neutral-400 text-sm mt-1">{{ proposal.description }}</p>
+          <div class="flex items-center justify-between mt-3">
+            <span class="text-xs text-neutral-600">
+              od {{ proposal.profiles?.name || 'Neznámý' }}
+            </span>
+            <div class="flex items-center gap-2">
+              <button
+                v-if="canEdit"
+                class="text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
+                @click="startEdit"
+              >
+                Upravit
+              </button>
+              <button
+                v-if="canEdit"
+                class="text-xs text-red-400/60 hover:text-red-400 transition-colors"
+                @click="$emit('delete', proposal.id)"
+              >
+                Smazat
+              </button>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
   </div>

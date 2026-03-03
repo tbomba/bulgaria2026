@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
 
-const { proposals, loading, fetchProposals, addProposal, vote, deleteProposal } = useProposals()
+const { proposals, loading, fetchProposals, addProposal, vote, updateProposal, deleteProposal } = useProposals()
 
 const showForm = ref(false)
 const form = reactive({ title: '', description: '' })
@@ -80,7 +80,8 @@ const handleSubmit = async () => {
         :loading="loading"
         @upvote="vote($event, 1)"
         @downvote="vote($event, -1)"
-        @delete="deleteProposal"
+        @update="(id, updates) => updateProposal(id, updates)"
+        @delete="(id) => { if (confirm('Opravdu smazat tento návrh?')) deleteProposal(id) }"
       />
     </div>
   </div>

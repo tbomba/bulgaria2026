@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
 
-const { photos, loading, fetchPhotos, deletePhoto } = usePhotos()
+const { photos, loading, fetchPhotos, updatePhoto, deletePhoto } = usePhotos()
 const supabase = useSupabaseClient()
 
 const lightbox = ref<{ url: string; caption: string } | null>(null)
@@ -69,6 +69,7 @@ const handleDelete = async (id: string) => {
             :key="photo.id"
             :photo="photo"
             @click="lightbox = { url: photo.url, caption: photo.caption }"
+            @update="(id, updates) => updatePhoto(id, updates)"
             @delete="handleDelete"
           />
         </div>

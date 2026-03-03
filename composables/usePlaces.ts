@@ -41,10 +41,16 @@ export const usePlaces = () => {
     await fetchPlaces()
   }
 
+  const updatePlace = async (id: string, updates: { name?: string; description?: string; image_url?: string; href?: string }) => {
+    const { error } = await supabase.from('places').update(updates).eq('id', id)
+    if (error) throw error
+    await fetchPlaces()
+  }
+
   const deletePlace = async (id: string) => {
     await supabase.from('places').delete().eq('id', id)
     await fetchPlaces()
   }
 
-  return { places, loading, fetchPlaces, addPlace, toggleVote, deletePlace }
+  return { places, loading, fetchPlaces, addPlace, toggleVote, updatePlace, deletePlace }
 }

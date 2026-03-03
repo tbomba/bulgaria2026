@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ middleware: "auth" });
 
-const { places, loading, fetchPlaces, addPlace, toggleVote, deletePlace } =
+const { places, loading, fetchPlaces, addPlace, toggleVote, updatePlace, deletePlace } =
   usePlaces();
 
 const showForm = ref(false);
@@ -106,7 +106,8 @@ const handleSubmit = async () => {
         :key="place.id"
         :place="place"
         @vote="toggleVote"
-        @delete="deletePlace"
+        @update="(id, updates) => updatePlace(id, updates)"
+        @delete="(id) => { if (confirm('Opravdu smazat toto místo?')) deletePlace(id) }"
       />
     </div>
   </div>

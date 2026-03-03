@@ -177,7 +177,7 @@ const medals = ["🥇", "🥈", "🥉"];
           @complete="handleComplete"
           @uncomplete="uncompleteChallenge"
           @update="(id, updates) => updateChallenge(id, updates)"
-          @delete="deleteChallenge"
+          @delete="(id) => { if (confirm('Opravdu smazat tuto výzvu?')) deleteChallenge(id) }"
           @toggle-winner="(cId, tId) => toggleWinner(cId, tId)"
         />
       </div>

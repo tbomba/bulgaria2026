@@ -20,6 +20,12 @@ export const usePhotos = () => {
     loading.value = false
   }
 
+  const updatePhoto = async (id: string, updates: { caption?: string }) => {
+    const { error } = await supabase.from('photos').update(updates).eq('id', id)
+    if (error) throw error
+    await fetchPhotos()
+  }
+
   const deletePhoto = async (id: string, url: string) => {
     // Delete from storage
     const path = url.split('/storage/v1/object/public/photos/')[1]
@@ -31,5 +37,5 @@ export const usePhotos = () => {
     await fetchPhotos()
   }
 
-  return { photos, loading, fetchPhotos, deletePhoto }
+  return { photos, loading, fetchPhotos, updatePhoto, deletePhoto }
 }

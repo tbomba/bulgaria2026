@@ -56,10 +56,16 @@ export const useProposals = () => {
     await fetchProposals()
   }
 
+  const updateProposal = async (id: string, updates: { title?: string; description?: string }) => {
+    const { error } = await supabase.from('proposals').update(updates).eq('id', id)
+    if (error) throw error
+    await fetchProposals()
+  }
+
   const deleteProposal = async (id: string) => {
     await supabase.from('proposals').delete().eq('id', id)
     await fetchProposals()
   }
 
-  return { proposals, loading, fetchProposals, addProposal, vote, deleteProposal }
+  return { proposals, loading, fetchProposals, addProposal, vote, updateProposal, deleteProposal }
 }
