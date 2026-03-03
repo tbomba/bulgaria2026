@@ -10,14 +10,14 @@ export const useChallenges = () => {
     loading.value = true
     const { data } = await supabase
       .from('challenges')
-      .select('*, profiles!challenges_created_by_fkey(name), challenge_completions(user_id, proof_url, profiles!challenge_completions_user_id_fkey(name)), teams!challenges_winner_team_id_fkey(id, name, color)')
+      .select('*, profiles!challenges_created_by_fkey(name), challenge_completions(user_id, proof_url, profiles!challenge_completions_user_id_fkey(name)), winner_team:teams!winner_team_id(id, name, color)')
       .order('created_at', { ascending: false })
 
     challenges.value = (data || []).map((c: any) => ({
       ...c,
       completions: c.challenge_completions || [],
       user_completed: c.challenge_completions?.some((comp: any) => comp.user_id === userId.value) || false,
-      winner_team: c.teams || null,
+      winner_team: c.winner_team || null,
     }))
 
     // Build leaderboard
@@ -36,7 +36,7 @@ export const useChallenges = () => {
     loading.value = false
   }
 
-  const addChallenge = async (challenge: { title: string; description: string; points: number }) => {
+  const addChallenge = async (challenge: { title: string; description: string; points: number; type: 'solo' | 'team' }) => {
     if (!userId.value) return
     const { error } = await supabase.from('challenges').insert({
       ...challenge,
@@ -46,14 +46,35 @@ export const useChallenges = () => {
     await fetchChallenges()
   }
 
-  const completeChallenge = async (challengeId: string, proofUrl?: string) => {
+  const completeChallenge = async (challengeId: string) => {
     if (!userId.value) return
-    const { error } = await supabase.from('challenge_completions').insert({
-      challenge_id: challengeId,
-      user_id: userId.value,
-      proof_url: proofUrl || null,
-    })
-    if (error) throw error
+    const challenge = challenges.value.find((c: any) => c.id === challengeId)
+    if (challenge?.type === 'team') {
+      const { error } = await supabase.rpc('complete_challenge_for_team', { p_challenge_id: challengeId })
+      if (error) throw error
+    } else {
+      const { error } = await supabase.from('challenge_completions').insert({
+        challenge_id: challengeId,
+        user_id: userId.value,
+      })
+      if (error) throw error
+    }
+    await fetchChallenges()
+  }
+
+  const uncompleteChallenge = async (challengeId: string) => {
+    if (!userId.value) return
+    const challenge = challenges.value.find((c: any) => c.id === challengeId)
+    if (challenge?.type === 'team') {
+      const { error } = await supabase.rpc('uncomplete_challenge_for_team', { p_challenge_id: challengeId })
+      if (error) throw error
+    } else {
+      const { error } = await supabase.from('challenge_completions')
+        .delete()
+        .eq('challenge_id', challengeId)
+        .eq('user_id', userId.value)
+      if (error) throw error
+    }
     await fetchChallenges()
   }
 
@@ -71,5 +92,5 @@ export const useChallenges = () => {
     await fetchChallenges()
   }
 
-  return { challenges, leaderboard, loading, fetchChallenges, addChallenge, completeChallenge, deleteChallenge, setWinner }
+  return { challenges, leaderboard, loading, fetchChallenges, addChallenge, completeChallenge, uncompleteChallenge, deleteChallenge, setWinner }
 }

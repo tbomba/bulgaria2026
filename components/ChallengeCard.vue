@@ -5,6 +5,7 @@ const props = defineProps<{
     title: string
     description: string
     points: number
+    type: 'solo' | 'team'
     created_by: string
     profiles?: { name: string } | null
     completions: Array<{ user_id: string; proof_url: string | null; profiles?: { name: string } | null }>
@@ -13,10 +14,12 @@ const props = defineProps<{
   }
   loading?: boolean
   teams?: Array<{ id: string; name: string; color: string }>
+  userTeamColor?: string | null
 }>()
 
 defineEmits<{
   complete: [id: string]
+  uncomplete: [id: string]
   delete: [id: string]
   'set-winner': [challengeId: string, teamId: string | null]
 }>()
@@ -31,20 +34,33 @@ const hexToRgb = (hex: string) => {
   return `${r}, ${g}, ${b}`
 }
 
-const glowStyle = computed(() => {
-  if (!props.challenge.winner_team) return {}
-  return { '--glow': hexToRgb(props.challenge.winner_team.color) }
+const teamCompleted = computed(() =>
+  props.challenge.type === 'team' && props.challenge.user_completed && !!props.userTeamColor
+)
+
+const glowColor = computed(() => {
+  if (props.challenge.winner_team) return hexToRgb(props.challenge.winner_team.color)
+  if (teamCompleted.value) return hexToRgb(props.userTeamColor!)
+  return null
 })
 </script>
 
 <template>
   <div
     class="card-fun p-5 relative overflow-hidden"
-    :class="{ 'winner-glow': challenge.winner_team }"
-    :style="glowStyle"
+    :class="{ 'winner-glow': glowColor }"
+    :style="glowColor ? `--glow: ${glowColor}` : undefined"
   >
-    <!-- Left accent bar -->
-    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-white/20 to-white/5 rounded-l-2xl"></div>
+    <!-- Left accent bar — solo: thin white, team: thick in team color -->
+    <div
+      v-if="challenge.type === 'team' && userTeamColor"
+      class="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl"
+      :style="`background: linear-gradient(to bottom, ${userTeamColor}99, ${userTeamColor}33)`"
+    ></div>
+    <div
+      v-else
+      class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-white/20 to-white/5 rounded-l-2xl"
+    ></div>
 
     <div class="flex items-start justify-between pl-3">
       <div class="flex-1">
@@ -52,6 +68,9 @@ const glowStyle = computed(() => {
           <h3 class="font-heading font-bold text-lg text-white">{{ challenge.title }}</h3>
           <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/10 text-neutral-300 border border-white/10">
             {{ challenge.points }} b.
+          </span>
+          <span class="text-xs text-neutral-500">
+            {{ challenge.type === 'team' ? '👥 Tým' : '👤 Solo' }}
           </span>
         </div>
         <p class="text-neutral-400 text-sm">{{ challenge.description }}</p>
@@ -106,7 +125,15 @@ const glowStyle = computed(() => {
           Smazat
         </button>
         <button
-          v-if="!challenge.user_completed"
+          v-if="challenge.user_completed"
+          class="text-xs text-neutral-500 hover:text-neutral-300 transition-colors border border-white/10 rounded-full py-1.5 px-4"
+          :disabled="loading"
+          @click="$emit('uncomplete', challenge.id)"
+        >
+          Zrušit ✅
+        </button>
+        <button
+          v-else
           class="btn-primary text-xs !py-1.5 !px-4"
           :disabled="loading"
           @click="$emit('complete', challenge.id)"

@@ -9,14 +9,15 @@ const {
   addChallenge,
   completeChallenge,
   deleteChallenge,
+  uncompleteChallenge,
   setWinner,
 } = useChallenges();
 
-const { isAdmin } = useAuth();
+const { isAdmin, userTeam } = useAuth();
 const { teams, fetchTeams } = useTeams();
 
 const showForm = ref(false);
-const form = reactive({ title: "", description: "", points: 10 });
+const form = reactive({ title: "", description: "", points: 10, type: "solo" as "solo" | "team" });
 const submitting = ref(false);
 
 onMounted(async () => {
@@ -29,7 +30,7 @@ const handleSubmit = async () => {
   submitting.value = true;
   try {
     await addChallenge({ ...form });
-    Object.assign(form, { title: "", description: "", points: 10 });
+    Object.assign(form, { title: "", description: "", points: 10, type: "solo" });
     showForm.value = false;
   } catch (e: any) {
     alert(e.message);
@@ -95,6 +96,29 @@ const medals = ["🥇", "🥈", "🥉"];
                 class="input-glass !w-24"
               />
             </div>
+            <div class="flex items-center gap-2">
+              <label class="text-sm text-neutral-400 font-medium">Typ:</label>
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-full text-xs font-medium transition-all border"
+                :class="form.type === 'solo'
+                  ? 'bg-white/15 text-white border-white/20'
+                  : 'bg-white/[0.04] text-neutral-500 border-white/[0.08] hover:bg-white/[0.08]'"
+                @click="form.type = 'solo'"
+              >
+                👤 Solo
+              </button>
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-full text-xs font-medium transition-all border"
+                :class="form.type === 'team'
+                  ? 'bg-white/15 text-white border-white/20'
+                  : 'bg-white/[0.04] text-neutral-500 border-white/[0.08] hover:bg-white/[0.08]'"
+                @click="form.type = 'team'"
+              >
+                👥 Tým
+              </button>
+            </div>
             <button type="submit" class="btn-primary" :disabled="submitting">
               {{ submitting ? "Přidávám..." : "Přidat výzvu" }}
             </button>
@@ -120,7 +144,9 @@ const medals = ["🥇", "🥈", "🥉"];
           :challenge="challenge"
           :loading="loading"
           :teams="teams"
+          :user-team-color="userTeam?.color"
           @complete="handleComplete"
+          @uncomplete="uncompleteChallenge"
           @delete="deleteChallenge"
           @set-winner="(cId, tId) => setWinner(cId, tId)"
         />
