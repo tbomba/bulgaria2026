@@ -10,13 +10,14 @@ export const useChallenges = () => {
     loading.value = true
     const { data } = await supabase
       .from('challenges')
-      .select('*, profiles!challenges_created_by_fkey(name), challenge_completions(user_id, proof_url, profiles!challenge_completions_user_id_fkey(name))')
+      .select('*, profiles!challenges_created_by_fkey(name), challenge_completions(user_id, proof_url, profiles!challenge_completions_user_id_fkey(name)), teams!challenges_winner_team_id_fkey(id, name, color)')
       .order('created_at', { ascending: false })
 
     challenges.value = (data || []).map((c: any) => ({
       ...c,
       completions: c.challenge_completions || [],
       user_completed: c.challenge_completions?.some((comp: any) => comp.user_id === userId.value) || false,
+      winner_team: c.teams || null,
     }))
 
     // Build leaderboard
@@ -61,5 +62,14 @@ export const useChallenges = () => {
     await fetchChallenges()
   }
 
-  return { challenges, leaderboard, loading, fetchChallenges, addChallenge, completeChallenge, deleteChallenge }
+  const setWinner = async (challengeId: string, teamId: string | null) => {
+    const { error } = await supabase
+      .from('challenges')
+      .update({ winner_team_id: teamId })
+      .eq('id', challengeId)
+    if (error) throw error
+    await fetchChallenges()
+  }
+
+  return { challenges, leaderboard, loading, fetchChallenges, addChallenge, completeChallenge, deleteChallenge, setWinner }
 }

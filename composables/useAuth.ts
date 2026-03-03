@@ -12,6 +12,7 @@ export const useAuth = () => {
 
   const profile = useState<{ id: string; name: string; avatar_url: string | null; is_admin?: boolean } | null>('profile', () => null)
   const isAdmin = computed(() => profile.value?.is_admin === true)
+  const userTeam = useState<{ id: string; name: string; color: string; members: Array<{ user_id: string; name: string }> } | null>('userTeam', () => null)
 
   const fetchProfile = async () => {
     if (!userId.value) {
@@ -24,6 +25,39 @@ export const useAuth = () => {
       .eq('id', userId.value)
       .single()
     profile.value = data
+    await fetchUserTeam()
+  }
+
+  const fetchUserTeam = async () => {
+    if (!userId.value) {
+      userTeam.value = null
+      return
+    }
+    const { data: membership } = await supabase
+      .from('team_members')
+      .select('team_id, teams(id, name, color)')
+      .eq('user_id', userId.value)
+      .limit(1)
+      .single()
+
+    if (!membership?.teams) {
+      userTeam.value = null
+      return
+    }
+
+    const team = membership.teams as unknown as { id: string; name: string; color: string }
+    const { data: members } = await supabase
+      .from('team_members')
+      .select('user_id, profiles(name)')
+      .eq('team_id', team.id)
+
+    userTeam.value = {
+      ...team,
+      members: (members || []).map((m: any) => ({
+        user_id: m.user_id,
+        name: (m.profiles as any)?.name || 'Unknown',
+      })),
+    }
   }
 
   const signIn = async (email: string, password: string) => {
@@ -45,6 +79,7 @@ export const useAuth = () => {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
     profile.value = null
+    userTeam.value = null
     navigateTo('/login')
   }
 
@@ -63,7 +98,9 @@ export const useAuth = () => {
     userId,
     isAdmin,
     profile,
+    userTeam,
     fetchProfile,
+    fetchUserTeam,
     signIn,
     signUp,
     signOut,

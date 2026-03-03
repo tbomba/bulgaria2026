@@ -1,33 +1,48 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'auth' })
+definePageMeta({ middleware: "auth" });
 
-const { challenges, leaderboard, loading, fetchChallenges, addChallenge, completeChallenge, deleteChallenge } = useChallenges()
+const {
+  challenges,
+  leaderboard,
+  loading,
+  fetchChallenges,
+  addChallenge,
+  completeChallenge,
+  deleteChallenge,
+  setWinner,
+} = useChallenges();
 
-const showForm = ref(false)
-const form = reactive({ title: '', description: '', points: 10 })
-const submitting = ref(false)
+const { isAdmin } = useAuth();
+const { teams, fetchTeams } = useTeams();
 
-onMounted(() => fetchChallenges())
+const showForm = ref(false);
+const form = reactive({ title: "", description: "", points: 10 });
+const submitting = ref(false);
+
+onMounted(async () => {
+  await fetchChallenges();
+  if (isAdmin.value) await fetchTeams();
+});
 
 const handleSubmit = async () => {
-  if (!form.title.trim()) return
-  submitting.value = true
+  if (!form.title.trim()) return;
+  submitting.value = true;
   try {
-    await addChallenge({ ...form })
-    Object.assign(form, { title: '', description: '', points: 10 })
-    showForm.value = false
+    await addChallenge({ ...form });
+    Object.assign(form, { title: "", description: "", points: 10 });
+    showForm.value = false;
   } catch (e: any) {
-    alert(e.message)
+    alert(e.message);
   } finally {
-    submitting.value = false
+    submitting.value = false;
   }
-}
+};
 
 const handleComplete = async (id: string) => {
-  await completeChallenge(id)
-}
+  await completeChallenge(id);
+};
 
-const medals = ['🥇', '🥈', '🥉']
+const medals = ["🥇", "🥈", "🥉"];
 </script>
 
 <template>
@@ -35,10 +50,10 @@ const medals = ['🥇', '🥈', '🥉']
     <div class="flex items-center justify-between mb-2">
       <h1 class="page-title">🏆 Výzvy</h1>
       <button class="btn-primary text-sm" @click="showForm = !showForm">
-        {{ showForm ? 'Zrušit' : '+ Nová výzva' }}
+        {{ showForm ? "Zrušit" : "+ Nová výzva" }}
       </button>
     </div>
-    <p class="page-subtitle">Odvážíš se splnit všechny?</p>
+    <p class="page-subtitle">Nejhorší tým hraje mokrej piškot</p>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Challenges list -->
@@ -52,7 +67,11 @@ const medals = ['🥇', '🥈', '🥉']
           leave-from-class="opacity-100 translate-y-0"
           leave-to-class="opacity-0 -translate-y-2"
         >
-          <form v-if="showForm" class="card p-5 space-y-3" @submit.prevent="handleSubmit">
+          <form
+            v-if="showForm"
+            class="card p-5 space-y-3"
+            @submit.prevent="handleSubmit"
+          >
             <input
               v-model="form.title"
               type="text"
@@ -77,12 +96,15 @@ const medals = ['🥇', '🥈', '🥉']
               />
             </div>
             <button type="submit" class="btn-primary" :disabled="submitting">
-              {{ submitting ? 'Přidávám...' : 'Přidat výzvu' }}
+              {{ submitting ? "Přidávám..." : "Přidat výzvu" }}
             </button>
           </form>
         </Transition>
 
-        <div v-if="loading && !challenges.length" class="text-center py-20 text-neutral-500">
+        <div
+          v-if="loading && !challenges.length"
+          class="text-center py-20 text-neutral-500"
+        >
           Načítám výzvy...
         </div>
 
@@ -97,17 +119,24 @@ const medals = ['🥇', '🥈', '🥉']
           :key="challenge.id"
           :challenge="challenge"
           :loading="loading"
+          :teams="teams"
           @complete="handleComplete"
           @delete="deleteChallenge"
+          @set-winner="(cId, tId) => setWinner(cId, tId)"
         />
       </div>
 
       <!-- Leaderboard -->
       <div>
         <div class="card-dark p-5 sticky top-20">
-          <h2 class="font-heading font-bold text-xl text-white mb-4">🏅 Žebříček</h2>
+          <h2 class="font-heading font-bold text-xl text-white mb-4">
+            🏅 Žebříček
+          </h2>
 
-          <div v-if="!leaderboard.length" class="text-center py-8 text-neutral-500 text-sm">
+          <div
+            v-if="!leaderboard.length"
+            class="text-center py-8 text-neutral-500 text-sm"
+          >
             Splň výzvy a objevíš se zde!
           </div>
 
@@ -116,11 +145,25 @@ const medals = ['🥇', '🥈', '🥉']
               v-for="(entry, i) in leaderboard"
               :key="entry.user_id"
               class="flex items-center gap-3 p-3 rounded-xl"
-              :class="i === 0 ? 'bg-white/[0.06]' : i === 1 ? 'bg-white/[0.04]' : i === 2 ? 'bg-white/[0.03]' : 'bg-white/[0.02]'"
+              :class="
+                i === 0
+                  ? 'bg-white/[0.06]'
+                  : i === 1
+                    ? 'bg-white/[0.04]'
+                    : i === 2
+                      ? 'bg-white/[0.03]'
+                      : 'bg-white/[0.02]'
+              "
             >
-              <span class="text-xl w-8 text-center">{{ medals[i] || `#${i + 1}` }}</span>
-              <span class="font-medium text-neutral-200 flex-1">{{ entry.name }}</span>
-              <span class="font-heading font-bold text-white">{{ entry.points }} b.</span>
+              <span class="text-xl w-8 text-center">{{
+                medals[i] || `#${i + 1}`
+              }}</span>
+              <span class="font-medium text-neutral-200 flex-1">{{
+                entry.name
+              }}</span>
+              <span class="font-heading font-bold text-white"
+                >{{ entry.points }} b.</span
+              >
             </div>
           </div>
         </div>

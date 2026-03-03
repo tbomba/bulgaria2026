@@ -87,6 +87,18 @@
            hover:shadow-glass-lg hover:-translate-y-1;
   }
 
+  /* ===== WINNER GLOW ===== */
+  .winner-glow {
+    border-color: rgba(var(--glow), 0.2);
+    box-shadow: 0 0 25px rgba(var(--glow), 0.1), 0 0 50px rgba(var(--glow), 0.05);
+    background: rgba(var(--glow), 0.03);
+  }
+  .winner-glow:hover {
+    border-color: rgba(var(--glow), 0.35);
+    box-shadow: 0 0 35px rgba(var(--glow), 0.15), 0 0 70px rgba(var(--glow), 0.08);
+    background: rgba(var(--glow), 0.06);
+  }
+
   /* ===== TILE GLOW ON HOVER ===== */
   .tile-glow {
     --glow: 255, 255, 255;

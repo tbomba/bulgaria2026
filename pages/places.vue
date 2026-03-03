@@ -1,31 +1,33 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'auth' })
+definePageMeta({ middleware: "auth" });
 
-const { places, loading, fetchPlaces, addPlace, toggleVote, deletePlace } = usePlaces()
+const { places, loading, fetchPlaces, addPlace, toggleVote, deletePlace } =
+  usePlaces();
 
-const showForm = ref(false)
-const form = reactive({ name: '', description: '', image_url: '' })
-const submitting = ref(false)
+const showForm = ref(false);
+const form = reactive({ name: "", description: "", image_url: "", href: "" });
+const submitting = ref(false);
 
-onMounted(() => fetchPlaces())
+onMounted(() => fetchPlaces());
 
 const handleSubmit = async () => {
-  if (!form.name.trim()) return
-  submitting.value = true
+  if (!form.name.trim()) return;
+  submitting.value = true;
   try {
     await addPlace({
       name: form.name,
       description: form.description,
       image_url: form.image_url || undefined,
-    })
-    Object.assign(form, { name: '', description: '', image_url: '' })
-    showForm.value = false
+      href: form.href || undefined,
+    });
+    Object.assign(form, { name: "", description: "", image_url: "", href: "" });
+    showForm.value = false;
   } catch (e: any) {
-    alert(e.message)
+    alert(e.message);
   } finally {
-    submitting.value = false
+    submitting.value = false;
   }
-}
+};
 </script>
 
 <template>
@@ -33,10 +35,10 @@ const handleSubmit = async () => {
     <div class="flex items-center justify-between mb-2">
       <h1 class="page-title">📍 Místa k návštěvě</h1>
       <button class="btn-primary text-sm" @click="showForm = !showForm">
-        {{ showForm ? 'Zrušit' : '+ Přidat místo' }}
+        {{ showForm ? "Zrušit" : "+ Přidat místo" }}
       </button>
     </div>
-    <p class="page-subtitle">Hlasuj pro místa, která chceš navštívit!</p>
+    <p class="page-subtitle">Hlasuj pro místa, která chceš navštívit</p>
 
     <!-- Add form -->
     <Transition
@@ -47,7 +49,11 @@ const handleSubmit = async () => {
       leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 -translate-y-2"
     >
-      <form v-if="showForm" class="card p-5 mb-8 space-y-3" @submit.prevent="handleSubmit">
+      <form
+        v-if="showForm"
+        class="card p-5 mb-8 space-y-3"
+        @submit.prevent="handleSubmit"
+      >
         <input
           v-model="form.name"
           type="text"
@@ -67,14 +73,23 @@ const handleSubmit = async () => {
           placeholder="URL obrázku (nepovinné)"
           class="input-glass"
         />
+        <input
+          v-model="form.href"
+          type="url"
+          placeholder="Odkaz / URL (nepovinné)"
+          class="input-glass"
+        />
         <button type="submit" class="btn-primary" :disabled="submitting">
-          {{ submitting ? 'Přidávám...' : 'Přidat místo' }}
+          {{ submitting ? "Přidávám..." : "Přidat místo" }}
         </button>
       </form>
     </Transition>
 
     <!-- Loading -->
-    <div v-if="loading && !places.length" class="text-center py-20 text-neutral-500">
+    <div
+      v-if="loading && !places.length"
+      class="text-center py-20 text-neutral-500"
+    >
       Načítám místa...
     </div>
 

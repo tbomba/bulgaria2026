@@ -5,19 +5,20 @@
         <!-- Trip info -->
         <div>
           <h3 class="font-heading font-bold text-lg text-white mb-3">
-            🇧🇬 Bulgaria 2026
+            🇧🇬 Bulharsko 2026
           </h3>
           <p class="text-neutral-500 text-sm leading-relaxed">
-            Z Prahy do Primorska -- ultimátní road trip přes střední a východní Evropu.
+            Z Prahy do Primorska
           </p>
         </div>
 
         <!-- Route highlights -->
         <div>
-          <h4 class="font-heading font-semibold text-neutral-300 mb-3">Hlavní zastávky</h4>
+          <h4 class="font-heading font-semibold text-neutral-300 mb-3">
+            Hlavní zastávky
+          </h4>
           <ul class="space-y-1.5 text-sm text-neutral-500">
             <li>🏰 Praha -- Start</li>
-            <li>🎡 Vídeň -- Rychlá zastávka</li>
             <li>🛁 Budapešť -- Ruin bary</li>
             <li>🏔️ Transylvánie -- Divoké cesty</li>
             <li>🌊 Primorsko -- Cílová destinace</li>
@@ -26,26 +27,53 @@
 
         <!-- Quick links -->
         <div>
-          <h4 class="font-heading font-semibold text-neutral-300 mb-3">Rychlé odkazy</h4>
+          <h4 class="font-heading font-semibold text-neutral-300 mb-3">
+            Rychlé odkazy
+          </h4>
           <ul class="space-y-1.5 text-sm">
-            <li><NuxtLink to="/roadmap" class="text-neutral-500 hover:text-neutral-300 transition-colors">🗺️ Trasa</NuxtLink></li>
-            <li><NuxtLink to="/places" class="text-neutral-500 hover:text-neutral-300 transition-colors">📍 Místa</NuxtLink></li>
-            <li><NuxtLink to="/challenges" class="text-neutral-500 hover:text-neutral-300 transition-colors">🏆 Výzvy</NuxtLink></li>
-            <li><NuxtLink to="/photos" class="text-neutral-500 hover:text-neutral-300 transition-colors">📸 Fotky</NuxtLink></li>
-            <li><NuxtLink to="/proposals" class="text-neutral-500 hover:text-neutral-300 transition-colors">💡 Návrhy</NuxtLink></li>
+            <li>
+              <NuxtLink
+                to="/roadmap"
+                class="text-neutral-500 hover:text-neutral-300 transition-colors"
+                >🗺️ Trasa</NuxtLink
+              >
+            </li>
+            <li>
+              <NuxtLink
+                to="/places"
+                class="text-neutral-500 hover:text-neutral-300 transition-colors"
+                >📍 Místa</NuxtLink
+              >
+            </li>
+            <li>
+              <NuxtLink
+                to="/challenges"
+                class="text-neutral-500 hover:text-neutral-300 transition-colors"
+                >🏆 Výzvy</NuxtLink
+              >
+            </li>
+            <li>
+              <NuxtLink
+                to="/photos"
+                class="text-neutral-500 hover:text-neutral-300 transition-colors"
+                >📸 Fotky</NuxtLink
+              >
+            </li>
+            <li>
+              <NuxtLink
+                to="/proposals"
+                class="text-neutral-500 hover:text-neutral-300 transition-colors"
+                >💡 Návrhy</NuxtLink
+              >
+            </li>
           </ul>
         </div>
       </div>
 
       <!-- Divider -->
-      <div class="border-t border-white/[0.06] pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <p class="text-neutral-600 text-sm">
-          Vytvořeno s ❤️ pro partu Bulgaria 2026
-        </p>
-        <p class="text-neutral-700 text-xs">
-          10 dní, 5 zemí, 1 epický road trip 🚗💨
-        </p>
-      </div>
+      <div
+        class="border-t border-white/[0.06] pt-6 flex flex-col sm:flex-row items-center justify-between gap-2"
+      ></div>
     </div>
   </footer>
 </template>

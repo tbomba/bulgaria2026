@@ -20,7 +20,7 @@ export const usePlaces = () => {
     loading.value = false
   }
 
-  const addPlace = async (place: { name: string; description: string; image_url?: string; lat?: number; lng?: number }) => {
+  const addPlace = async (place: { name: string; description: string; image_url?: string; href?: string; lat?: number; lng?: number }) => {
     if (!userId.value) return
     const { error } = await supabase.from('places').insert({
       ...place,
