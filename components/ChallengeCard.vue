@@ -9,8 +9,9 @@ const props = defineProps<{
     created_by: string
     profiles?: { name: string } | null
     completions: Array<{ user_id: string; proof_url: string | null; profiles?: { name: string } | null }>
+    href?: string | null
     user_completed: boolean
-    winner_team?: { id: string; name: string; color: string } | null
+    winner_teams: Array<{ id: string; name: string; color: string }>
   }
   loading?: boolean
   teams?: Array<{ id: string; name: string; color: string }>
@@ -21,8 +22,8 @@ defineEmits<{
   complete: [id: string]
   uncomplete: [id: string]
   delete: [id: string]
-  'set-winner': [challengeId: string, teamId: string | null]
-  'update': [id: string, updates: { title: string; description: string; points: number; type: 'solo' | 'team' }]
+  'toggle-winner': [challengeId: string, teamId: string]
+  'update': [id: string, updates: { title: string; description: string; points: number; type: 'solo' | 'team'; href: string }]
 }>()
 
 const userId = useUserId()
@@ -30,7 +31,7 @@ const { isAdmin } = useAuth()
 
 const canEdit = computed(() => userId.value === props.challenge.created_by || isAdmin.value)
 const editing = ref(false)
-const editForm = reactive({ title: '', description: '', points: 10, type: 'solo' as 'solo' | 'team' })
+const editForm = reactive({ title: '', description: '', points: 10, type: 'solo' as 'solo' | 'team', href: '' })
 
 const startEdit = () => {
   Object.assign(editForm, {
@@ -38,6 +39,7 @@ const startEdit = () => {
     description: props.challenge.description,
     points: props.challenge.points,
     type: props.challenge.type,
+    href: props.challenge.href || '',
   })
   editing.value = true
 }
@@ -53,18 +55,71 @@ const teamCompleted = computed(() =>
   props.challenge.type === 'team' && props.challenge.user_completed && !!props.userTeamColor
 )
 
-const glowColor = computed(() => {
-  if (props.challenge.winner_team) return hexToRgb(props.challenge.winner_team.color)
-  if (teamCompleted.value) return hexToRgb(props.userTeamColor!)
-  return null
+const glowStyle = computed(() => {
+  const colors = props.challenge.winner_teams.map(t => t.color)
+  if (!colors.length && teamCompleted.value) colors.push(props.userTeamColor!)
+  if (!colors.length) return null
+
+  if (colors.length === 1) {
+    const rgb = hexToRgb(colors[0])
+    return {
+      borderColor: `rgba(${rgb}, 0.2)`,
+      boxShadow: `0 0 25px rgba(${rgb}, 0.1), 0 0 50px rgba(${rgb}, 0.05)`,
+      background: `rgba(${rgb}, 0.03)`,
+    }
+  }
+
+  const stops = colors.map((c, i) => {
+    const pct1 = (i / colors.length) * 100
+    const pct2 = ((i + 1) / colors.length) * 100
+    return `${c}18 ${pct1}%, ${c}18 ${pct2}%`
+  }).join(', ')
+
+  const rgb = hexToRgb(colors[0])
+  return {
+    borderColor: `rgba(${rgb}, 0.2)`,
+    boxShadow: colors.map(c => `0 0 25px ${c}1a`).join(', '),
+    background: `linear-gradient(135deg, ${stops})`,
+  }
 })
+
+const glowHoverStyle = computed(() => {
+  const colors = props.challenge.winner_teams.map(t => t.color)
+  if (!colors.length && teamCompleted.value) colors.push(props.userTeamColor!)
+  if (!colors.length) return null
+
+  if (colors.length === 1) {
+    const rgb = hexToRgb(colors[0])
+    return {
+      borderColor: `rgba(${rgb}, 0.35)`,
+      boxShadow: `0 0 35px rgba(${rgb}, 0.15), 0 0 70px rgba(${rgb}, 0.08)`,
+      background: `rgba(${rgb}, 0.06)`,
+    }
+  }
+
+  const stops = colors.map((c, i) => {
+    const pct1 = (i / colors.length) * 100
+    const pct2 = ((i + 1) / colors.length) * 100
+    return `${c}28 ${pct1}%, ${c}28 ${pct2}%`
+  }).join(', ')
+
+  const rgb = hexToRgb(colors[0])
+  return {
+    borderColor: `rgba(${rgb}, 0.35)`,
+    boxShadow: colors.map(c => `0 0 35px ${c}26`).join(', '),
+    background: `linear-gradient(135deg, ${stops})`,
+  }
+})
+
+const isHovered = ref(false)
 </script>
 
 <template>
   <div
     class="card-fun p-5 relative overflow-hidden"
-    :class="{ 'winner-glow': glowColor }"
-    :style="glowColor ? `--glow: ${glowColor}` : undefined"
+    :style="isHovered && glowHoverStyle ? glowHoverStyle : glowStyle || undefined"
+    @mouseenter="isHovered = true"
+    @mouseleave="isHovered = false"
   >
     <!-- Left accent bar — solo: thin white, team: thick in team color -->
     <div
@@ -90,6 +145,12 @@ const glowColor = computed(() => {
         placeholder="Popis výzvy..."
         rows="2"
         class="input-glass text-sm resize-none"
+      />
+      <input
+        v-model="editForm.href"
+        type="url"
+        placeholder="Odkaz (volitelné)"
+        class="input-glass text-sm"
       />
       <div class="flex items-center gap-3">
         <label class="text-xs text-neutral-400 font-medium">Body:</label>
@@ -153,18 +214,30 @@ const glowColor = computed(() => {
             </span>
           </div>
           <p class="text-neutral-400 text-sm">{{ challenge.description }}</p>
+          <a
+            v-if="challenge.href"
+            :href="challenge.href"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-1 text-xs text-blue-400/80 hover:text-blue-400 transition-colors mt-1"
+            @click.stop
+          >
+            🔗 {{ challenge.href.replace(/^https?:\/\//, '').slice(0, 40) }}{{ challenge.href.replace(/^https?:\/\//, '').length > 40 ? '...' : '' }}
+          </a>
         </div>
         <span v-if="challenge.user_completed" class="text-2xl shrink-0 ml-2 animate-bounce-slow">✅</span>
       </div>
 
-      <!-- Winner badge -->
-      <div v-if="challenge.winner_team" class="flex items-center gap-2 mt-2 pl-3">
+      <!-- Winner badges -->
+      <div v-if="challenge.winner_teams.length" class="flex flex-wrap items-center gap-2 mt-2 pl-3">
+        <span class="text-xs font-semibold text-neutral-400">Vítěz:</span>
         <span
-          class="w-3 h-3 rounded-full shrink-0"
-          :style="{ backgroundColor: challenge.winner_team.color }"
-        ></span>
-        <span class="text-xs font-semibold text-neutral-300">
-          Vítěz: {{ challenge.winner_team.name }}
+          v-for="wt in challenge.winner_teams"
+          :key="wt.id"
+          class="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-300"
+        >
+          <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: wt.color }"></span>
+          {{ wt.name }}
         </span>
       </div>
 
@@ -182,18 +255,22 @@ const glowColor = computed(() => {
       <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.06] pl-3">
         <div class="flex items-center gap-3">
           <span class="text-xs text-neutral-600">od {{ challenge.profiles?.name || 'Neznámý' }}</span>
-          <!-- Admin winner dropdown -->
-          <select
-            v-if="isAdmin && teams?.length"
-            class="text-xs bg-white/[0.06] border border-white/[0.1] rounded-lg px-2 py-1 text-neutral-300 outline-none cursor-pointer"
-            :value="challenge.winner_team?.id || ''"
-            @change="$emit('set-winner', challenge.id, ($event.target as HTMLSelectElement).value || null)"
-          >
-            <option value="">Bez vítěze</option>
-            <option v-for="team in teams" :key="team.id" :value="team.id">
+          <!-- Admin winner toggles -->
+          <div v-if="isAdmin && teams?.length" class="flex items-center gap-1">
+            <button
+              v-for="team in teams"
+              :key="team.id"
+              type="button"
+              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-all border cursor-pointer"
+              :class="challenge.winner_teams.some(wt => wt.id === team.id)
+                ? 'bg-white/15 text-white border-white/20'
+                : 'bg-white/[0.04] text-neutral-500 border-white/[0.08] hover:bg-white/[0.08]'"
+              @click="$emit('toggle-winner', challenge.id, team.id)"
+            >
+              <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: team.color }"></span>
               {{ team.name }}
-            </option>
-          </select>
+            </button>
+          </div>
         </div>
         <div class="flex items-center gap-2">
           <button

@@ -11,14 +11,14 @@ const {
   deleteChallenge,
   uncompleteChallenge,
   updateChallenge,
-  setWinner,
+  toggleWinner,
 } = useChallenges();
 
 const { isAdmin, userTeam } = useAuth();
 const { teams, fetchTeams } = useTeams();
 
 const showForm = ref(false);
-const form = reactive({ title: "", description: "", points: 10, type: "solo" as "solo" | "team" });
+const form = reactive({ title: "", description: "", points: 10, type: "solo" as "solo" | "team", href: "" });
 const submitting = ref(false);
 
 onMounted(async () => {
@@ -31,7 +31,7 @@ const handleSubmit = async () => {
   submitting.value = true;
   try {
     await addChallenge({ ...form });
-    Object.assign(form, { title: "", description: "", points: 10, type: "solo" });
+    Object.assign(form, { title: "", description: "", points: 10, type: "solo", href: "" });
     showForm.value = false;
   } catch (e: any) {
     alert(e.message);
@@ -86,6 +86,12 @@ const medals = ["🥇", "🥈", "🥉"];
               placeholder="Popis výzvy..."
               rows="2"
               class="input-glass resize-none"
+            />
+            <input
+              v-model="form.href"
+              type="url"
+              placeholder="Odkaz (volitelné)"
+              class="input-glass"
             />
             <div class="flex items-center gap-3">
               <label class="text-sm text-neutral-400 font-medium">Body:</label>
@@ -150,7 +156,7 @@ const medals = ["🥇", "🥈", "🥉"];
           @uncomplete="uncompleteChallenge"
           @update="(id, updates) => updateChallenge(id, updates)"
           @delete="deleteChallenge"
-          @set-winner="(cId, tId) => setWinner(cId, tId)"
+          @toggle-winner="(cId, tId) => toggleWinner(cId, tId)"
         />
       </div>
 

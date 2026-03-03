@@ -10,14 +10,14 @@ export const useChallenges = () => {
     loading.value = true
     const { data } = await supabase
       .from('challenges')
-      .select('*, profiles!challenges_created_by_fkey(name), challenge_completions(user_id, proof_url, profiles!challenge_completions_user_id_fkey(name)), winner_team:teams!winner_team_id(id, name, color)')
+      .select('*, profiles!challenges_created_by_fkey(name), challenge_completions(user_id, proof_url, profiles!challenge_completions_user_id_fkey(name)), challenge_winners(team_id, teams(id, name, color))')
       .order('created_at', { ascending: false })
 
     challenges.value = (data || []).map((c: any) => ({
       ...c,
       completions: c.challenge_completions || [],
       user_completed: c.challenge_completions?.some((comp: any) => comp.user_id === userId.value) || false,
-      winner_team: c.winner_team || null,
+      winner_teams: (c.challenge_winners || []).map((w: any) => w.teams).filter(Boolean),
     }))
 
     // Build leaderboard
@@ -36,10 +36,12 @@ export const useChallenges = () => {
     loading.value = false
   }
 
-  const addChallenge = async (challenge: { title: string; description: string; points: number; type: 'solo' | 'team' }) => {
+  const addChallenge = async (challenge: { title: string; description: string; points: number; type: 'solo' | 'team'; href?: string }) => {
     if (!userId.value) return
+    const { href, ...rest } = challenge
     const { error } = await supabase.from('challenges').insert({
-      ...challenge,
+      ...rest,
+      href: href || null,
       created_by: userId.value,
     })
     if (error) throw error
@@ -78,7 +80,7 @@ export const useChallenges = () => {
     await fetchChallenges()
   }
 
-  const updateChallenge = async (id: string, updates: { title?: string; description?: string; points?: number; type?: 'solo' | 'team' }) => {
+  const updateChallenge = async (id: string, updates: { title?: string; description?: string; points?: number; type?: 'solo' | 'team'; href?: string }) => {
     const { error } = await supabase.from('challenges').update(updates).eq('id', id)
     if (error) throw error
     await fetchChallenges()
@@ -89,14 +91,18 @@ export const useChallenges = () => {
     await fetchChallenges()
   }
 
-  const setWinner = async (challengeId: string, teamId: string | null) => {
-    const { error } = await supabase
-      .from('challenges')
-      .update({ winner_team_id: teamId })
-      .eq('id', challengeId)
-    if (error) throw error
+  const toggleWinner = async (challengeId: string, teamId: string) => {
+    const challenge = challenges.value.find((c: any) => c.id === challengeId)
+    const isWinner = challenge?.winner_teams?.some((t: any) => t.id === teamId)
+    if (isWinner) {
+      const { error } = await supabase.from('challenge_winners').delete().eq('challenge_id', challengeId).eq('team_id', teamId)
+      if (error) throw error
+    } else {
+      const { error } = await supabase.from('challenge_winners').insert({ challenge_id: challengeId, team_id: teamId })
+      if (error) throw error
+    }
     await fetchChallenges()
   }
 
-  return { challenges, leaderboard, loading, fetchChallenges, addChallenge, completeChallenge, uncompleteChallenge, updateChallenge, deleteChallenge, setWinner }
+  return { challenges, leaderboard, loading, fetchChallenges, addChallenge, completeChallenge, uncompleteChallenge, updateChallenge, deleteChallenge, toggleWinner }
 }
