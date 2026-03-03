@@ -8,7 +8,7 @@ export const usePhotos = () => {
     loading.value = true
     let query = supabase
       .from('photos')
-      .select('*, profiles(name)')
+      .select('*, profiles!photos_uploaded_by_fkey(name)')
       .order('created_at', { ascending: false })
 
     if (filters?.uploadedBy) {

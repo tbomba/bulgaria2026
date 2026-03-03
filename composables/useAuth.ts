@@ -1,18 +1,26 @@
+// Helper: @nuxtjs/supabase stores JWT claims in useSupabaseUser(),
+// which has `sub` instead of `id`. This helper gets the user ID reliably.
+export const useUserId = () => {
+  const user = useSupabaseUser()
+  return computed(() => (user.value as any)?.id ?? (user.value as any)?.sub ?? null)
+}
+
 export const useAuth = () => {
   const supabase = useSupabaseClient()
   const user = useSupabaseUser()
+  const userId = useUserId()
 
   const profile = useState<{ id: string; name: string; avatar_url: string | null } | null>('profile', () => null)
 
   const fetchProfile = async () => {
-    if (!user.value) {
+    if (!userId.value) {
       profile.value = null
       return
     }
     const { data } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', user.value.id)
+      .eq('id', userId.value)
       .single()
     profile.value = data
   }
@@ -40,17 +48,18 @@ export const useAuth = () => {
   }
 
   const updateProfile = async (updates: { name?: string; avatar_url?: string }) => {
-    if (!user.value) return
+    if (!userId.value) return
     const { error } = await supabase
       .from('profiles')
       .update(updates)
-      .eq('id', user.value.id)
+      .eq('id', userId.value)
     if (error) throw error
     await fetchProfile()
   }
 
   return {
     user,
+    userId,
     profile,
     fetchProfile,
     signIn,

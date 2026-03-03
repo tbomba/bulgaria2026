@@ -18,7 +18,7 @@ defineEmits<{
   delete: [id: string]
 }>()
 
-const user = useSupabaseUser()
+const userId = useUserId()
 </script>
 
 <template>
@@ -50,7 +50,7 @@ const user = useSupabaseUser()
       <span class="text-xs text-gray-400">by {{ challenge.profiles?.name || 'Unknown' }}</span>
       <div class="flex items-center gap-2">
         <button
-          v-if="user?.id === challenge.created_by"
+          v-if="userId === challenge.created_by"
           class="text-xs text-red-400 hover:text-red-600 transition-colors"
           @click="$emit('delete', challenge.id)"
         >

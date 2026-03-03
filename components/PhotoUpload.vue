@@ -4,7 +4,7 @@ const emit = defineEmits<{
 }>()
 
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
+const userId = useUserId()
 
 const caption = ref('')
 const fileInput = ref<HTMLInputElement>()
@@ -20,13 +20,13 @@ const onFileSelect = (e: Event) => {
 }
 
 const upload = async () => {
-  if (!selectedFile.value || !user.value) return
+  if (!selectedFile.value || !userId.value) return
 
   uploading.value = true
   try {
     const file = selectedFile.value
     const ext = file.name.split('.').pop()
-    const path = `${user.value.id}/${Date.now()}.${ext}`
+    const path = `${userId.value}/${Date.now()}.${ext}`
 
     const { error: uploadError } = await supabase.storage
       .from('photos')
@@ -40,7 +40,7 @@ const upload = async () => {
     const { error: dbError } = await supabase.from('photos').insert({
       url: publicUrl,
       caption: caption.value,
-      uploaded_by: user.value.id,
+      uploaded_by: userId.value,
     })
     if (dbError) throw dbError
 

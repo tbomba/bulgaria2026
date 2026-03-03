@@ -19,7 +19,7 @@ defineEmits<{
   delete: [id: string]
 }>()
 
-const user = useSupabaseUser()
+const userId = useUserId()
 </script>
 
 <template>
@@ -42,7 +42,7 @@ const user = useSupabaseUser()
         </span>
         <div class="flex items-center gap-2">
           <button
-            v-if="user?.id === place.added_by"
+            v-if="userId === place.added_by"
             class="text-xs text-red-400 hover:text-red-600 transition-colors"
             @click="$emit('delete', place.id)"
           >

@@ -15,7 +15,7 @@ defineEmits<{
   delete: [id: string]
 }>()
 
-const user = useSupabaseUser()
+const userId = useUserId()
 </script>
 
 <template>
@@ -27,7 +27,7 @@ const user = useSupabaseUser()
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
       />
       <button
-        v-if="user?.id === photo.uploaded_by"
+        v-if="userId === photo.uploaded_by"
         class="absolute top-2 right-2 w-7 h-7 bg-red-500/80 text-white rounded-full flex items-center justify-center
                opacity-0 group-hover:opacity-100 transition-opacity text-xs hover:bg-red-600"
         @click.stop="$emit('delete', photo.id)"

@@ -1,6 +1,6 @@
 export const useChallenges = () => {
   const supabase = useSupabaseClient()
-  const user = useSupabaseUser()
+  const userId = useUserId()
 
   const challenges = ref<any[]>([])
   const leaderboard = ref<Array<{ user_id: string; name: string; points: number }>>([])
@@ -10,13 +10,13 @@ export const useChallenges = () => {
     loading.value = true
     const { data } = await supabase
       .from('challenges')
-      .select('*, profiles(name), challenge_completions(user_id, proof_url, profiles(name))')
+      .select('*, profiles!challenges_created_by_fkey(name), challenge_completions(user_id, proof_url, profiles!challenge_completions_user_id_fkey(name))')
       .order('created_at', { ascending: false })
 
     challenges.value = (data || []).map((c: any) => ({
       ...c,
       completions: c.challenge_completions || [],
-      user_completed: c.challenge_completions?.some((comp: any) => comp.user_id === user.value?.id) || false,
+      user_completed: c.challenge_completions?.some((comp: any) => comp.user_id === userId.value) || false,
     }))
 
     // Build leaderboard
@@ -36,20 +36,20 @@ export const useChallenges = () => {
   }
 
   const addChallenge = async (challenge: { title: string; description: string; points: number }) => {
-    if (!user.value) return
+    if (!userId.value) return
     const { error } = await supabase.from('challenges').insert({
       ...challenge,
-      created_by: user.value.id,
+      created_by: userId.value,
     })
     if (error) throw error
     await fetchChallenges()
   }
 
   const completeChallenge = async (challengeId: string, proofUrl?: string) => {
-    if (!user.value) return
+    if (!userId.value) return
     const { error } = await supabase.from('challenge_completions').insert({
       challenge_id: challengeId,
-      user_id: user.value.id,
+      user_id: userId.value,
       proof_url: proofUrl || null,
     })
     if (error) throw error

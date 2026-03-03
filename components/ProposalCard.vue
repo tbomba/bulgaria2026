@@ -19,7 +19,7 @@ defineEmits<{
   delete: [id: string]
 }>()
 
-const user = useSupabaseUser()
+const userId = useUserId()
 </script>
 
 <template>
@@ -69,7 +69,7 @@ const user = useSupabaseUser()
             by {{ proposal.profiles?.name || 'Unknown' }}
           </span>
           <button
-            v-if="user?.id === proposal.proposed_by"
+            v-if="userId === proposal.proposed_by"
             class="text-xs text-red-400 hover:text-red-600 transition-colors"
             @click="$emit('delete', proposal.id)"
           >
