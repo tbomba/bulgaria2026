@@ -33,12 +33,12 @@ const medals = ['🥇', '🥈', '🥉']
 <template>
   <div class="page-container">
     <div class="flex items-center justify-between mb-2">
-      <h1 class="page-title">🏆 Challenges</h1>
+      <h1 class="page-title">🏆 Výzvy</h1>
       <button class="btn-primary text-sm" @click="showForm = !showForm">
-        {{ showForm ? 'Cancel' : '+ New Challenge' }}
+        {{ showForm ? 'Zrušit' : '+ Nová výzva' }}
       </button>
     </div>
-    <p class="page-subtitle">Dare to complete them all!</p>
+    <p class="page-subtitle">Odvážíš se splnit všechny?</p>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Challenges list -->
@@ -56,18 +56,18 @@ const medals = ['🥇', '🥈', '🥉']
             <input
               v-model="form.title"
               type="text"
-              placeholder="Challenge title"
+              placeholder="Název výzvy"
               required
               class="input-glass"
             />
             <textarea
               v-model="form.description"
-              placeholder="Describe the challenge..."
+              placeholder="Popis výzvy..."
               rows="2"
               class="input-glass resize-none"
             />
             <div class="flex items-center gap-3">
-              <label class="text-sm text-neutral-400 font-medium">Points:</label>
+              <label class="text-sm text-neutral-400 font-medium">Body:</label>
               <input
                 v-model.number="form.points"
                 type="number"
@@ -77,18 +77,18 @@ const medals = ['🥇', '🥈', '🥉']
               />
             </div>
             <button type="submit" class="btn-primary" :disabled="submitting">
-              {{ submitting ? 'Adding...' : 'Add Challenge' }}
+              {{ submitting ? 'Přidávám...' : 'Přidat výzvu' }}
             </button>
           </form>
         </Transition>
 
         <div v-if="loading && !challenges.length" class="text-center py-20 text-neutral-500">
-          Loading challenges...
+          Načítám výzvy...
         </div>
 
         <div v-else-if="!challenges.length" class="text-center py-20">
           <span class="text-5xl">🎯</span>
-          <p class="text-neutral-500 mt-3">No challenges yet. Create the first one!</p>
+          <p class="text-neutral-500 mt-3">Zatím žádné výzvy. Vytvoř první!</p>
         </div>
 
         <ChallengeCard
@@ -105,10 +105,10 @@ const medals = ['🥇', '🥈', '🥉']
       <!-- Leaderboard -->
       <div>
         <div class="card-dark p-5 sticky top-20">
-          <h2 class="font-heading font-bold text-xl text-white mb-4">🏅 Leaderboard</h2>
+          <h2 class="font-heading font-bold text-xl text-white mb-4">🏅 Žebříček</h2>
 
           <div v-if="!leaderboard.length" class="text-center py-8 text-neutral-500 text-sm">
-            Complete challenges to appear here!
+            Splň výzvy a objevíš se zde!
           </div>
 
           <div v-else class="space-y-3">
@@ -120,7 +120,7 @@ const medals = ['🥇', '🥈', '🥉']
             >
               <span class="text-xl w-8 text-center">{{ medals[i] || `#${i + 1}` }}</span>
               <span class="font-medium text-neutral-200 flex-1">{{ entry.name }}</span>
-              <span class="font-heading font-bold text-white">{{ entry.points }} pts</span>
+              <span class="font-heading font-bold text-white">{{ entry.points }} b.</span>
             </div>
           </div>
         </div>

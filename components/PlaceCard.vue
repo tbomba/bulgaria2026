@@ -41,7 +41,7 @@ const { isAdmin } = useAuth()
       <p class="text-neutral-400 text-sm mt-1 line-clamp-2">{{ place.description }}</p>
       <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.06]">
         <span class="text-xs text-neutral-600">
-          by {{ place.profiles?.name || 'Unknown' }}
+          od {{ place.profiles?.name || 'Neznámý' }}
         </span>
         <div class="flex items-center gap-2">
           <button
@@ -49,7 +49,7 @@ const { isAdmin } = useAuth()
             class="text-xs text-red-400/60 hover:text-red-400 transition-colors"
             @click="$emit('delete', place.id)"
           >
-            Delete
+            Smazat
           </button>
           <VoteButton
             :count="place.vote_count"

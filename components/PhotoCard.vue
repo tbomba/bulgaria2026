@@ -42,7 +42,7 @@ const { isAdmin } = useAuth()
     <div class="p-3">
       <p v-if="photo.caption" class="text-sm text-neutral-300 line-clamp-2">{{ photo.caption }}</p>
       <p class="text-xs text-neutral-600 mt-1">
-        {{ photo.profiles?.name || 'Unknown' }}
+        {{ photo.profiles?.name || 'Neznámý' }}
       </p>
     </div>
   </div>

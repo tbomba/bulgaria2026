@@ -31,12 +31,12 @@ const handleSubmit = async () => {
 <template>
   <div class="page-container">
     <div class="flex items-center justify-between mb-2">
-      <h1 class="page-title">📍 Places to Visit</h1>
+      <h1 class="page-title">📍 Místa k návštěvě</h1>
       <button class="btn-primary text-sm" @click="showForm = !showForm">
-        {{ showForm ? 'Cancel' : '+ Add Place' }}
+        {{ showForm ? 'Zrušit' : '+ Přidat místo' }}
       </button>
     </div>
-    <p class="page-subtitle">Vote on places you want to visit!</p>
+    <p class="page-subtitle">Hlasuj pro místa, která chceš navštívit!</p>
 
     <!-- Add form -->
     <Transition
@@ -51,37 +51,37 @@ const handleSubmit = async () => {
         <input
           v-model="form.name"
           type="text"
-          placeholder="Place name"
+          placeholder="Název místa"
           required
           class="input-glass"
         />
         <textarea
           v-model="form.description"
-          placeholder="Why should we visit?"
+          placeholder="Proč bychom tam měli zajet?"
           rows="2"
           class="input-glass resize-none"
         />
         <input
           v-model="form.image_url"
           type="url"
-          placeholder="Image URL (optional)"
+          placeholder="URL obrázku (nepovinné)"
           class="input-glass"
         />
         <button type="submit" class="btn-primary" :disabled="submitting">
-          {{ submitting ? 'Adding...' : 'Add Place' }}
+          {{ submitting ? 'Přidávám...' : 'Přidat místo' }}
         </button>
       </form>
     </Transition>
 
     <!-- Loading -->
     <div v-if="loading && !places.length" class="text-center py-20 text-neutral-500">
-      Loading places...
+      Načítám místa...
     </div>
 
     <!-- Empty -->
     <div v-else-if="!places.length" class="text-center py-20">
       <span class="text-5xl">🏖️</span>
-      <p class="text-neutral-500 mt-3">No places yet. Be the first to add one!</p>
+      <p class="text-neutral-500 mt-3">Zatím žádná místa. Přidej první!</p>
     </div>
 
     <!-- Grid -->

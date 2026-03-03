@@ -27,12 +27,12 @@ const handleSubmit = async () => {
 <template>
   <div class="page-container">
     <div class="flex items-center justify-between mb-2">
-      <h1 class="page-title">💡 Proposals</h1>
+      <h1 class="page-title">💡 Návrhy</h1>
       <button class="btn-primary text-sm" @click="showForm = !showForm">
-        {{ showForm ? 'Cancel' : '+ New Proposal' }}
+        {{ showForm ? 'Zrušit' : '+ Nový návrh' }}
       </button>
     </div>
-    <p class="page-subtitle">Propose activities, restaurants, experiences & vote!</p>
+    <p class="page-subtitle">Navrhuj aktivity, restaurace, zážitky a hlasuj!</p>
 
     <!-- Add form -->
     <Transition
@@ -47,29 +47,29 @@ const handleSubmit = async () => {
         <input
           v-model="form.title"
           type="text"
-          placeholder="What's your proposal?"
+          placeholder="Jaký máš návrh?"
           required
           class="input-glass"
         />
         <textarea
           v-model="form.description"
-          placeholder="Tell us more about it..."
+          placeholder="Řekni nám o tom víc..."
           rows="3"
           class="input-glass resize-none"
         />
         <button type="submit" class="btn-primary" :disabled="submitting">
-          {{ submitting ? 'Adding...' : 'Submit Proposal' }}
+          {{ submitting ? 'Přidávám...' : 'Odeslat návrh' }}
         </button>
       </form>
     </Transition>
 
     <div v-if="loading && !proposals.length" class="text-center py-20 text-neutral-500">
-      Loading proposals...
+      Načítám návrhy...
     </div>
 
     <div v-else-if="!proposals.length" class="text-center py-20">
       <span class="text-5xl">🤔</span>
-      <p class="text-neutral-500 mt-3">No proposals yet. Suggest something fun!</p>
+      <p class="text-neutral-500 mt-3">Zatím žádné návrhy. Navrhni něco zábavného!</p>
     </div>
 
     <div v-else class="max-w-2xl mx-auto space-y-4">

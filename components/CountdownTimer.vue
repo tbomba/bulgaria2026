@@ -35,10 +35,10 @@ const isTrip = computed(() => {
 <template>
   <div class="text-center">
     <div v-if="isTrip" class="text-lg sm:text-2xl font-heading font-extrabold text-white animate-bounce-slow">
-      🎉 THE TRIP IS HAPPENING NOW! 🎉
+      🎉 VÝLET PRÁVĚ PROBÍHÁ! 🎉
     </div>
     <div v-else-if="timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0" class="text-base sm:text-xl font-heading font-bold text-neutral-500">
-      Trip has ended! What a ride 🚗💨
+      Výlet skončil! To byla jízda 🚗💨
     </div>
     <div v-else class="flex justify-center gap-2.5 sm:gap-4 lg:gap-8">
       <div v-for="(value, key) in timeLeft" :key="key" class="flex flex-col items-center">
@@ -50,7 +50,7 @@ const isTrip = computed(() => {
             {{ String(value).padStart(2, '0') }}
           </span>
         </div>
-        <span class="text-[10px] sm:text-xs lg:text-sm text-neutral-500 mt-1.5 sm:mt-2 font-semibold uppercase tracking-wider">{{ key }}</span>
+        <span class="text-[10px] sm:text-xs lg:text-sm text-neutral-500 mt-1.5 sm:mt-2 font-semibold uppercase tracking-wider">{{ { days: 'dní', hours: 'hodin', minutes: 'minut', seconds: 'sekund' }[key] }}</span>
       </div>
     </div>
   </div>

@@ -67,14 +67,14 @@ const { isAdmin } = useAuth()
         <p class="text-neutral-400 text-sm mt-1">{{ proposal.description }}</p>
         <div class="flex items-center justify-between mt-3">
           <span class="text-xs text-neutral-600">
-            by {{ proposal.profiles?.name || 'Unknown' }}
+            od {{ proposal.profiles?.name || 'Neznámý' }}
           </span>
           <button
             v-if="userId === proposal.proposed_by || isAdmin"
             class="text-xs text-red-400/60 hover:text-red-400 transition-colors"
             @click="$emit('delete', proposal.id)"
           >
-            Delete
+            Smazat
           </button>
         </div>
       </div>

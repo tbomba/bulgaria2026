@@ -25,15 +25,15 @@ watch(filterBy, async (val) => {
 const handleDelete = async (id: string) => {
   const photo = photos.value.find(p => p.id === id)
   if (!photo) return
-  if (!confirm('Delete this photo?')) return
+  if (!confirm('Smazat tuto fotku?')) return
   await deletePhoto(id, photo.url)
 }
 </script>
 
 <template>
   <div class="page-container">
-    <h1 class="page-title">📸 Photo Album</h1>
-    <p class="page-subtitle">Memories from the trip</p>
+    <h1 class="page-title">📸 Fotoalbum</h1>
+    <p class="page-subtitle">Vzpomínky z výletu</p>
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
       <!-- Upload + filter sidebar -->
@@ -41,12 +41,12 @@ const handleDelete = async (id: string) => {
         <PhotoUpload @uploaded="fetchPhotos()" />
 
         <div class="card p-4">
-          <h3 class="font-heading font-bold text-sm mb-2 text-neutral-400">Filter by person</h3>
+          <h3 class="font-heading font-bold text-sm mb-2 text-neutral-400">Filtrovat podle osoby</h3>
           <select
             v-model="filterBy"
             class="input-glass"
           >
-            <option value="">Everyone</option>
+            <option value="">Všichni</option>
             <option v-for="p in profiles" :key="p.id" :value="p.id">{{ p.name }}</option>
           </select>
         </div>
@@ -55,12 +55,12 @@ const handleDelete = async (id: string) => {
       <!-- Photo grid -->
       <div class="lg:col-span-3">
         <div v-if="loading && !photos.length" class="text-center py-20 text-neutral-500">
-          Loading photos...
+          Načítám fotky...
         </div>
 
         <div v-else-if="!photos.length" class="text-center py-20">
           <span class="text-5xl">🖼️</span>
-          <p class="text-neutral-500 mt-3">No photos yet. Upload the first one!</p>
+          <p class="text-neutral-500 mt-3">Zatím žádné fotky. Nahraj první!</p>
         </div>
 
         <div v-else class="grid grid-cols-2 sm:grid-cols-3 gap-4">

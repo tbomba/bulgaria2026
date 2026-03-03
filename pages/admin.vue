@@ -43,16 +43,16 @@ const availableTeamsFor = (user: { teams: { id: string }[] }) =>
 
 <template>
   <div class="page-container">
-    <h1 class="page-title font-heading">Admin Panel</h1>
-    <p class="page-subtitle">Manage users and teams</p>
+    <h1 class="page-title font-heading">Administrace</h1>
+    <p class="page-subtitle">Správa uživatelů a týmů</p>
 
-    <div v-if="loading" class="text-center py-20 text-neutral-500">Loading...</div>
+    <div v-if="loading" class="text-center py-20 text-neutral-500">Načítám...</div>
 
     <div v-else class="grid lg:grid-cols-5 gap-4 sm:gap-6">
       <!-- People section (wider) -->
       <div class="lg:col-span-3 space-y-4">
         <h2 class="font-heading font-bold text-lg sm:text-xl text-white flex items-center gap-2">
-          <span class="text-xl">👥</span> People
+          <span class="text-xl">👥</span> Lidé
           <span class="text-sm font-normal text-neutral-500">({{ users.length }})</span>
         </h2>
 
@@ -65,7 +65,7 @@ const availableTeamsFor = (user: { teams: { id: string }[] }) =>
             <!-- User info -->
             <div class="flex-1 min-w-0">
               <p class="font-semibold text-white truncate">{{ user.name }}</p>
-              <p class="text-xs text-neutral-500">Joined {{ formatDate(user.created_at) }}</p>
+              <p class="text-xs text-neutral-500">Registrace {{ formatDate(user.created_at) }}</p>
             </div>
 
             <!-- Team badges -->
@@ -83,7 +83,7 @@ const availableTeamsFor = (user: { teams: { id: string }[] }) =>
                 {{ team.name }}
                 <button
                   class="ml-0.5 text-neutral-600 hover:text-red-400 transition-colors opacity-0 group-hover/badge:opacity-100"
-                  title="Remove from team"
+                  title="Odebrat z týmu"
                   @click="handleRemoveMember(team.id, user.id)"
                 >
                   &times;
@@ -97,7 +97,7 @@ const availableTeamsFor = (user: { teams: { id: string }[] }) =>
               class="input-glass text-sm !py-1.5 !px-3 !w-auto !rounded-lg min-w-[130px] shrink-0"
               @change="(e) => { handleAssign(user.id, (e.target as HTMLSelectElement).value); (e.target as HTMLSelectElement).value = '' }"
             >
-              <option value="" disabled selected>+ Add team</option>
+              <option value="" disabled selected>+ Přidat tým</option>
               <option v-for="t in availableTeamsFor(user)" :key="t.id" :value="t.id">
                 {{ t.name }}
               </option>
@@ -109,18 +109,18 @@ const availableTeamsFor = (user: { teams: { id: string }[] }) =>
       <!-- Teams section -->
       <div class="lg:col-span-2 space-y-4">
         <h2 class="font-heading font-bold text-lg sm:text-xl text-white flex items-center gap-2">
-          <span class="text-xl">🏷️</span> Teams
+          <span class="text-xl">🏷️</span> Týmy
           <span class="text-sm font-normal text-neutral-500">({{ teams.length }})</span>
         </h2>
 
         <!-- Create team form -->
         <form class="card p-4 space-y-3" @submit.prevent="handleCreateTeam">
-          <p class="text-sm font-semibold text-neutral-300">Create Team</p>
+          <p class="text-sm font-semibold text-neutral-300">Vytvořit tým</p>
           <div class="flex gap-2">
             <input
               v-model="newTeamName"
               type="text"
-              placeholder="Team name"
+              placeholder="Název týmu"
               class="input-glass text-sm flex-1"
               required
             />
@@ -137,7 +137,7 @@ const availableTeamsFor = (user: { teams: { id: string }[] }) =>
             class="btn-primary w-full text-sm"
             :disabled="submitting || !newTeamName.trim()"
           >
-            {{ submitting ? 'Creating...' : 'Create Team' }}
+            {{ submitting ? 'Vytvářím...' : 'Vytvořit tým' }}
           </button>
         </form>
 
@@ -158,7 +158,7 @@ const availableTeamsFor = (user: { teams: { id: string }[] }) =>
               </div>
               <button
                 class="text-neutral-600 hover:text-red-400 transition-colors text-sm"
-                title="Delete team"
+                title="Smazat tým"
                 @click="handleDeleteTeam(team.id)"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,7 +176,7 @@ const availableTeamsFor = (user: { teams: { id: string }[] }) =>
                 {{ member.name }}
               </span>
               <span v-if="!team.members.length" class="text-xs text-neutral-600 italic">
-                No members yet
+                Zatím žádní členové
               </span>
             </div>
           </div>

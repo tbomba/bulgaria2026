@@ -4,12 +4,12 @@ const route = useRoute()
 const mobileMenuOpen = ref(false)
 
 const navLinks = [
-  { path: '/', label: 'Home', icon: '🏠' },
-  { path: '/roadmap', label: 'Roadmap', icon: '🗺️' },
-  { path: '/places', label: 'Places', icon: '📍' },
-  { path: '/challenges', label: 'Challenges', icon: '🏆' },
-  { path: '/photos', label: 'Photos', icon: '📸' },
-  { path: '/proposals', label: 'Proposals', icon: '💡' },
+  { path: '/', label: 'Domů', icon: '🏠' },
+  { path: '/roadmap', label: 'Trasa', icon: '🗺️' },
+  { path: '/places', label: 'Místa', icon: '📍' },
+  { path: '/challenges', label: 'Výzvy', icon: '🏆' },
+  { path: '/photos', label: 'Fotky', icon: '📸' },
+  { path: '/proposals', label: 'Návrhy', icon: '💡' },
 ]
 
 const isActive = (path: string) => route.path === path
@@ -60,14 +60,14 @@ const isActive = (path: string) => route.path === path
         <!-- User menu -->
         <div class="flex items-center gap-2 sm:gap-3">
           <span v-if="profile" class="text-sm text-neutral-400 hidden lg:inline">
-            Hey, <strong class="text-neutral-200">{{ profile.name }}</strong>!
+            Ahoj, <strong class="text-neutral-200">{{ profile.name }}</strong>!
           </span>
           <button
             v-if="profile"
             class="text-sm text-neutral-500 hover:text-neutral-300 transition-colors hidden sm:inline"
             @click="signOut"
           >
-            Logout
+            Odhlásit
           </button>
 
           <!-- Mobile menu button -->
@@ -127,7 +127,7 @@ const isActive = (path: string) => route.path === path
           class="block w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-neutral-500 hover:bg-white/[0.05] mt-2 border-t border-white/[0.06] pt-4"
           @click="signOut(); mobileMenuOpen = false"
         >
-          👋 Logout
+          👋 Odhlásit
         </button>
       </nav>
     </Transition>

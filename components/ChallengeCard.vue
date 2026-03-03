@@ -32,7 +32,7 @@ const { isAdmin } = useAuth()
         <div class="flex items-center gap-2 mb-1">
           <h3 class="font-heading font-bold text-lg text-white">{{ challenge.title }}</h3>
           <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/10 text-neutral-300 border border-white/10">
-            {{ challenge.points }} pts
+            {{ challenge.points }} b.
           </span>
         </div>
         <p class="text-neutral-400 text-sm">{{ challenge.description }}</p>
@@ -47,19 +47,19 @@ const { isAdmin } = useAuth()
         class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-white/[0.06] text-neutral-300 rounded-full text-xs font-medium
                backdrop-blur-sm border border-white/[0.08]"
       >
-        🏅 {{ comp.profiles?.name || 'Someone' }}
+        🏅 {{ comp.profiles?.name || 'Někdo' }}
       </span>
     </div>
 
     <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.06] pl-3">
-      <span class="text-xs text-neutral-600">by {{ challenge.profiles?.name || 'Unknown' }}</span>
+      <span class="text-xs text-neutral-600">od {{ challenge.profiles?.name || 'Neznámý' }}</span>
       <div class="flex items-center gap-2">
         <button
           v-if="userId === challenge.created_by || isAdmin"
           class="text-xs text-red-400/60 hover:text-red-400 transition-colors"
           @click="$emit('delete', challenge.id)"
         >
-          Delete
+          Smazat
         </button>
         <button
           v-if="!challenge.user_completed"
@@ -67,7 +67,7 @@ const { isAdmin } = useAuth()
           :disabled="loading"
           @click="$emit('complete', challenge.id)"
         >
-          Complete!
+          Splněno!
         </button>
       </div>
     </div>

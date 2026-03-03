@@ -33,26 +33,26 @@ const formatDate = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString('
 })
 
 const baseSections = [
-  { path: '/roadmap', icon: '🗺️', title: 'Roadmap', desc: 'Prague to Primorsko -- the full route', glow: '59, 130, 246' },
-  { path: '/places', icon: '📍', title: 'Places', desc: 'Where do we wanna stop?', glow: '239, 68, 68' },
-  { path: '/challenges', icon: '🏆', title: 'Challenges', desc: 'Dare to complete them all!', glow: '245, 158, 11' },
-  { path: '/photos', icon: '📸', title: 'Photos', desc: 'Memories from the road', glow: '168, 85, 247' },
-  { path: '/proposals', icon: '💡', title: 'Proposals', desc: 'Vote on activities & ideas', glow: '34, 197, 94' },
+  { path: '/roadmap', icon: '🗺️', title: 'Trasa', desc: 'Z Prahy do Primorska -- celá trasa', glow: '59, 130, 246' },
+  { path: '/places', icon: '📍', title: 'Místa', desc: 'Kde chceme zastavit?', glow: '239, 68, 68' },
+  { path: '/challenges', icon: '🏆', title: 'Výzvy', desc: 'Odvážíš se splnit všechny?', glow: '245, 158, 11' },
+  { path: '/photos', icon: '📸', title: 'Fotky', desc: 'Vzpomínky z cesty', glow: '168, 85, 247' },
+  { path: '/proposals', icon: '💡', title: 'Návrhy', desc: 'Hlasuj o aktivitách a nápadech', glow: '34, 197, 94' },
 ]
 
 const sections = computed(() => {
   if (!isAdmin.value) return baseSections
   return [
     ...baseSections,
-    { path: '/admin', icon: '🛡️', title: 'Admin', desc: 'Manage users & teams', glow: '220, 220, 220' },
+    { path: '/admin', icon: '🛡️', title: 'Admin', desc: 'Správa uživatelů a týmů', glow: '220, 220, 220' },
   ]
 })
 
 const statItems = computed(() => [
-  { label: 'Photos', value: stats.value.photos, icon: '📸' },
-  { label: 'Places', value: stats.value.places, icon: '📍' },
-  { label: 'Challenges', value: stats.value.challenges, icon: '🏆' },
-  { label: 'Proposals', value: stats.value.proposals, icon: '💡' },
+  { label: 'Fotky', value: stats.value.photos, icon: '📸' },
+  { label: 'Místa', value: stats.value.places, icon: '📍' },
+  { label: 'Výzvy', value: stats.value.challenges, icon: '🏆' },
+  { label: 'Návrhy', value: stats.value.proposals, icon: '💡' },
 ])
 </script>
 
@@ -64,7 +64,7 @@ const statItems = computed(() => [
         🇧🇬 Bulgaria 2026
       </h1>
       <p class="text-neutral-400 text-base sm:text-lg lg:text-xl mb-1 sm:mb-2 max-w-lg mx-auto">
-        Prague to Primorsko -- the ultimate road trip!
+        Z Prahy do Primorska -- ultimátní road trip!
       </p>
       <p class="text-xs sm:text-sm text-neutral-600">
         {{ formatDate(tripStart) }} — {{ formatDate(tripEnd) }}
@@ -74,7 +74,7 @@ const statItems = computed(() => [
     <!-- Countdown -->
     <div class="card p-4 sm:p-6 lg:p-8 mb-8 sm:mb-12 max-w-2xl mx-auto">
       <h2 class="text-center font-heading font-bold text-sm sm:text-lg text-neutral-400 mb-3 sm:mb-5 uppercase tracking-wider">
-        Countdown to Departure
+        Odpočet do odjezdu
       </h2>
       <CountdownTimer />
     </div>

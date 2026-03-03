@@ -50,7 +50,7 @@ const upload = async () => {
     if (fileInput.value) fileInput.value.value = ''
     emit('uploaded')
   } catch (err: any) {
-    alert('Upload failed: ' + err.message)
+    alert('Nahrávání selhalo: ' + err.message)
   } finally {
     uploading.value = false
   }
@@ -59,13 +59,13 @@ const upload = async () => {
 
 <template>
   <div class="card p-5">
-    <h3 class="font-heading font-bold text-lg mb-4 text-white">📸 Upload a Photo</h3>
+    <h3 class="font-heading font-bold text-lg mb-4 text-white">📸 Nahrát fotku</h3>
 
     <div
       v-if="preview"
       class="mb-3 rounded-xl overflow-hidden aspect-video bg-white/[0.03]"
     >
-      <img :src="preview" alt="Preview" class="w-full h-full object-cover" />
+      <img :src="preview" alt="Náhled" class="w-full h-full object-cover" />
     </div>
 
     <div class="space-y-3">
@@ -83,7 +83,7 @@ const upload = async () => {
       <input
         v-model="caption"
         type="text"
-        placeholder="Add a caption..."
+        placeholder="Přidej popisek..."
         class="input-glass"
       />
 
@@ -92,7 +92,7 @@ const upload = async () => {
         :disabled="!selectedFile || uploading"
         @click="upload"
       >
-        {{ uploading ? 'Uploading...' : 'Upload Photo' }}
+        {{ uploading ? 'Nahrávám...' : 'Nahrát fotku' }}
       </button>
     </div>
   </div>

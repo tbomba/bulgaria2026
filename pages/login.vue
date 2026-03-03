@@ -38,39 +38,39 @@ const submit = async () => {
       <h1 class="text-3xl sm:text-5xl lg:text-6xl font-heading font-extrabold text-white mb-2 animate-float tracking-tight">
         🇧🇬 Bulgaria 2026
       </h1>
-      <p class="text-neutral-400 text-sm sm:text-lg">Prague to Primorsko -- the ultimate road trip!</p>
+      <p class="text-neutral-400 text-sm sm:text-lg">Z Prahy do Primorska -- ultimátní road trip!</p>
     </div>
 
     <div class="bg-white/[0.05] backdrop-blur-2xl rounded-2xl sm:rounded-3xl shadow-glass-lg border border-white/[0.1] p-5 sm:p-8">
       <h2 class="font-heading font-bold text-2xl text-white text-center mb-6">
-        {{ mode === 'login' ? 'Welcome Back!' : 'Join the Crew!' }}
+        {{ mode === 'login' ? 'Vítej zpět!' : 'Přidej se k partě!' }}
       </h2>
 
       <form class="space-y-4" @submit.prevent="submit">
         <div v-if="mode === 'signup'">
-          <label class="block text-sm font-medium text-neutral-400 mb-1">Your Name</label>
+          <label class="block text-sm font-medium text-neutral-400 mb-1">Tvoje jméno</label>
           <input
             v-model="name"
             type="text"
-            placeholder="What should we call you?"
+            placeholder="Jak ti máme říkat?"
             required
             class="input-glass !py-3"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-neutral-400 mb-1">Email</label>
+          <label class="block text-sm font-medium text-neutral-400 mb-1">E-mail</label>
           <input
             v-model="email"
             type="email"
-            placeholder="your@email.com"
+            placeholder="tvuj@email.cz"
             required
             class="input-glass !py-3"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-neutral-400 mb-1">Password</label>
+          <label class="block text-sm font-medium text-neutral-400 mb-1">Heslo</label>
           <input
             v-model="password"
             type="password"
@@ -90,7 +90,7 @@ const submit = async () => {
           class="btn-primary w-full !py-3 text-lg"
           :disabled="loading"
         >
-          {{ loading ? '...' : mode === 'login' ? 'Let\'s Go!' : 'Sign Up' }}
+          {{ loading ? '...' : mode === 'login' ? 'Jedeme!' : 'Registrovat' }}
         </button>
       </form>
 
@@ -99,7 +99,7 @@ const submit = async () => {
           class="text-neutral-300 font-semibold hover:underline"
           @click="mode = mode === 'login' ? 'signup' : 'login'; error = ''"
         >
-          {{ mode === 'login' ? 'Need an account? Sign up' : 'Already have an account? Log in' }}
+          {{ mode === 'login' ? 'Nemáš účet? Zaregistruj se' : 'Už máš účet? Přihlaš se' }}
         </button>
       </p>
     </div>

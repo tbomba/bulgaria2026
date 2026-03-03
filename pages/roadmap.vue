@@ -2,23 +2,23 @@
 definePageMeta({ middleware: 'auth' })
 
 const itinerary = [
-  { day: 1, city: 'Prague', notes: 'Pack up, hit the road! Heading south through Czechia', emoji: '🏰' },
-  { day: 2, city: 'Vienna', notes: 'Quick stop -- Schnitzel, Danube vibes, maybe Prater', emoji: '🎡' },
-  { day: 3, city: 'Budapest', notes: 'Ruin bars, thermal baths, goulash. Cross into Romania', emoji: '🛁' },
-  { day: 4, city: 'Romania', notes: 'Transylvania drive -- Carpathian mountains, castles, wild roads', emoji: '🏔️' },
-  { day: 5, city: 'Bucharest', notes: 'Romanian capital -- Palace of Parliament, Old Town nightlife', emoji: '🏛️' },
-  { day: 6, city: 'Veliko Tarnovo', notes: 'Cross into Bulgaria! Tsarevets Fortress, medieval vibes', emoji: '🏰' },
-  { day: 7, city: 'Plovdiv', notes: 'Old Town, Roman Theatre, Kapana district, good food', emoji: '🎭' },
-  { day: 8, city: 'Sozopol', notes: 'Black Sea coast -- beach town, fresh seafood, chill', emoji: '🏖️' },
-  { day: 9, city: 'Primorsko', notes: 'Final destination! Beach, relax, celebrate the journey', emoji: '🌊' },
-  { day: 10, city: 'Primorsko', notes: 'Last day -- soak it in, pack up, homeward bound', emoji: '🚗' },
+  { day: 1, city: 'Praha', notes: 'Sbalit, vyrazit! Jedeme na jih přes Česko', emoji: '🏰' },
+  { day: 2, city: 'Vídeň', notes: 'Rychlá zastávka -- Řízek, Dunaj, třeba Prater', emoji: '🎡' },
+  { day: 3, city: 'Budapešť', notes: 'Ruin bary, termální lázně, guláš. Přejezd do Rumunska', emoji: '🛁' },
+  { day: 4, city: 'Rumunsko', notes: 'Projížďka Transylvánií -- Karpaty, hrady, divoké cesty', emoji: '🏔️' },
+  { day: 5, city: 'Bukurešť', notes: 'Rumunská metropole -- Palác parlamentu, noční život ve starém městě', emoji: '🏛️' },
+  { day: 6, city: 'Veliko Tarnovo', notes: 'Vstup do Bulharska! Pevnost Carevec, středověká atmosféra', emoji: '🏰' },
+  { day: 7, city: 'Plovdiv', notes: 'Staré město, Římský amfiteátr, čtvrť Kapana, skvělé jídlo', emoji: '🎭' },
+  { day: 8, city: 'Sozopol', notes: 'Pobřeží Černého moře -- plážové město, čerstvé mořské plody, pohoda', emoji: '🏖️' },
+  { day: 9, city: 'Primorsko', notes: 'Cílová destinace! Pláž, relax, oslava celé cesty', emoji: '🌊' },
+  { day: 10, city: 'Primorsko', notes: 'Poslední den -- užít si to, sbalit, cesta domů', emoji: '🚗' },
 ]
 </script>
 
 <template>
   <div class="page-container">
-    <h1 class="page-title">🗺️ Roadmap</h1>
-    <p class="page-subtitle">Prague to Primorsko -- our epic route across Europe</p>
+    <h1 class="page-title">🗺️ Trasa</h1>
+    <p class="page-subtitle">Z Prahy do Primorska -- naše epická trasa přes Evropu</p>
 
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
       <!-- Map -->
@@ -43,7 +43,7 @@ const itinerary = [
             <div class="card-accent p-4 ml-2 group hover:shadow-glass-lg transition-all duration-300">
               <div class="flex items-center gap-2 mb-1">
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/10 text-neutral-300 border border-white/10">
-                  Day {{ stop.day }}
+                  Den {{ stop.day }}
                 </span>
                 <span class="text-lg">{{ stop.emoji }}</span>
                 <h3 class="font-heading font-bold text-white">{{ stop.city }}</h3>
