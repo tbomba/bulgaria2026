@@ -2,7 +2,7 @@
 definePageMeta({ middleware: 'auth' })
 
 const config = useRuntimeConfig()
-const { profile, fetchProfile } = useAuth()
+const { profile, isAdmin, fetchProfile } = useAuth()
 const supabase = useSupabaseClient()
 
 const stats = ref({ photos: 0, challenges: 0, proposals: 0, places: 0 })
@@ -29,21 +29,29 @@ const tripStart = config.public.tripStartDate
 const tripEnd = config.public.tripEndDate
 
 const formatDate = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', {
-  month: 'long', day: 'numeric', year: 'numeric',
+  month: 'short', day: 'numeric', year: 'numeric',
 })
 
-const sections = [
-  { path: '/roadmap', icon: '🗺️', title: 'Roadmap', desc: 'Our epic route through Bulgaria', color: 'from-blue-400 to-blue-600' },
-  { path: '/places', icon: '📍', title: 'Places', desc: 'Where do we wanna go?', color: 'from-green-400 to-green-600' },
-  { path: '/challenges', icon: '🏆', title: 'Challenges', desc: 'Dare to complete them all!', color: 'from-yellow-400 to-orange-500' },
-  { path: '/photos', icon: '📸', title: 'Photos', desc: 'Memories from the trip', color: 'from-pink-400 to-pink-600' },
-  { path: '/proposals', icon: '💡', title: 'Proposals', desc: 'Vote on activities & ideas', color: 'from-purple-400 to-purple-600' },
+const baseSections = [
+  { path: '/roadmap', icon: '🗺️', title: 'Roadmap', desc: 'Prague to Primorsko -- the full route', glow: '59, 130, 246' },
+  { path: '/places', icon: '📍', title: 'Places', desc: 'Where do we wanna stop?', glow: '239, 68, 68' },
+  { path: '/challenges', icon: '🏆', title: 'Challenges', desc: 'Dare to complete them all!', glow: '245, 158, 11' },
+  { path: '/photos', icon: '📸', title: 'Photos', desc: 'Memories from the road', glow: '168, 85, 247' },
+  { path: '/proposals', icon: '💡', title: 'Proposals', desc: 'Vote on activities & ideas', glow: '34, 197, 94' },
 ]
+
+const sections = computed(() => {
+  if (!isAdmin.value) return baseSections
+  return [
+    ...baseSections,
+    { path: '/admin', icon: '🛡️', title: 'Admin', desc: 'Manage users & teams', glow: '220, 220, 220' },
+  ]
+})
 
 const statItems = computed(() => [
   { label: 'Photos', value: stats.value.photos, icon: '📸' },
   { label: 'Places', value: stats.value.places, icon: '📍' },
-  { label: 'Challenges Done', value: stats.value.challenges, icon: '🏆' },
+  { label: 'Challenges', value: stats.value.challenges, icon: '🏆' },
   { label: 'Proposals', value: stats.value.proposals, icon: '💡' },
 ])
 </script>
@@ -51,53 +59,82 @@ const statItems = computed(() => [
 <template>
   <div class="page-container">
     <!-- Hero -->
-    <div class="text-center mb-10">
-      <h1 class="text-4xl sm:text-6xl font-heading font-extrabold gradient-text mb-3 animate-float">
+    <div class="text-center mb-8 sm:mb-12">
+      <h1 class="text-3xl sm:text-5xl lg:text-7xl font-heading font-extrabold text-white mb-3 sm:mb-4 animate-float tracking-tight">
         🇧🇬 Bulgaria 2026
       </h1>
-      <p class="text-gray-500 text-lg sm:text-xl mb-2">
-        The ultimate road trip adventure!
+      <p class="text-neutral-400 text-base sm:text-lg lg:text-xl mb-1 sm:mb-2 max-w-lg mx-auto">
+        Prague to Primorsko -- the ultimate road trip!
       </p>
-      <p class="text-sm text-gray-400">
+      <p class="text-xs sm:text-sm text-neutral-600">
         {{ formatDate(tripStart) }} — {{ formatDate(tripEnd) }}
       </p>
     </div>
 
     <!-- Countdown -->
-    <div class="mb-12">
-      <h2 class="text-center font-heading font-bold text-xl text-gray-600 mb-4">Countdown to Departure</h2>
+    <div class="card p-4 sm:p-6 lg:p-8 mb-8 sm:mb-12 max-w-2xl mx-auto">
+      <h2 class="text-center font-heading font-bold text-sm sm:text-lg text-neutral-400 mb-3 sm:mb-5 uppercase tracking-wider">
+        Countdown to Departure
+      </h2>
       <CountdownTimer />
     </div>
 
-    <!-- Stats -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
+    <!-- Stats row -->
+    <div class="grid grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
       <div
         v-for="stat in statItems"
         :key="stat.label"
-        class="card text-center p-4"
+        class="card-accent text-center p-2.5 sm:p-4 flex flex-col items-center justify-center"
       >
-        <span class="text-2xl">{{ stat.icon }}</span>
-        <p class="text-2xl font-heading font-extrabold text-gray-800 mt-1">{{ stat.value }}</p>
-        <p class="text-xs text-gray-400">{{ stat.label }}</p>
+        <span class="text-lg sm:text-2xl lg:text-3xl">{{ stat.icon }}</span>
+        <p class="text-xl sm:text-2xl lg:text-3xl font-heading font-extrabold text-white mt-0.5 sm:mt-1">{{ stat.value }}</p>
+        <p class="text-[9px] sm:text-[11px] lg:text-xs text-neutral-500 font-medium uppercase tracking-wider">{{ stat.label }}</p>
       </div>
     </div>
 
     <!-- Navigation Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
       <NuxtLink
-        v-for="section in sections"
+        v-for="(section, i) in sections"
         :key="section.path"
         :to="section.path"
-        class="card-fun group p-6"
+        class="tile-glow group p-4 sm:p-5 lg:p-6 flex flex-col justify-between relative overflow-hidden
+               bg-white/[0.04] backdrop-blur-xl rounded-2xl border border-white/[0.08]
+               transition-all duration-500 hover:-translate-y-1.5 min-h-[120px] sm:min-h-[150px]"
+        :class="[
+          i === 0 ? 'col-span-2 sm:col-span-2 lg:col-span-3' : '',
+          i === 1 ? 'col-span-1 sm:col-span-1 lg:col-span-3' : '',
+          i === 2 ? 'col-span-1 sm:col-span-1 lg:col-span-2' : '',
+          i === 3 ? 'col-span-1 sm:col-span-1 lg:col-span-2' : '',
+          i === 4 ? 'col-span-1 sm:col-span-2 lg:col-span-2' : '',
+          i === 5 ? 'col-span-2 sm:col-span-3 lg:col-span-6' : '',
+        ]"
+        :style="`--glow: ${section.glow}`"
       >
+        <!-- Colored glow blob -->
         <div
-          class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-gradient-to-br shadow-lg mb-3"
-          :class="section.color"
-        >
-          <span class="group-hover:animate-wiggle">{{ section.icon }}</span>
+          class="absolute -right-8 -bottom-8 w-32 h-32 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 blur-2xl"
+          :style="`background: rgba(${section.glow}, 0.15)`"
+        ></div>
+
+        <div>
+          <div
+            class="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center text-lg sm:text-xl lg:text-2xl
+                   bg-white/[0.06] border border-white/[0.1] shadow-lg shadow-black/20 mb-2 sm:mb-3
+                   group-hover:border-[rgba(var(--glow),0.3)] transition-colors duration-500"
+          >
+            <span class="group-hover:animate-wiggle">{{ section.icon }}</span>
+          </div>
+          <h3 class="font-heading font-bold text-base sm:text-lg lg:text-xl text-white">{{ section.title }}</h3>
         </div>
-        <h3 class="font-heading font-bold text-xl text-gray-800">{{ section.title }}</h3>
-        <p class="text-gray-500 text-sm mt-1">{{ section.desc }}</p>
+        <p class="text-neutral-500 text-xs sm:text-sm mt-1 line-clamp-2">{{ section.desc }}</p>
+
+        <!-- Arrow indicator -->
+        <div class="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 opacity-0 group-hover:opacity-60 transition-all duration-300 translate-x-1 group-hover:translate-x-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" :style="`color: rgba(${section.glow}, 0.8)`">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
       </NuxtLink>
     </div>
   </div>

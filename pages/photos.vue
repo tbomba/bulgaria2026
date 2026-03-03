@@ -41,10 +41,10 @@ const handleDelete = async (id: string) => {
         <PhotoUpload @uploaded="fetchPhotos()" />
 
         <div class="card p-4">
-          <h3 class="font-heading font-bold text-sm mb-2 text-gray-600">Filter by person</h3>
+          <h3 class="font-heading font-bold text-sm mb-2 text-neutral-400">Filter by person</h3>
           <select
             v-model="filterBy"
-            class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none"
+            class="input-glass"
           >
             <option value="">Everyone</option>
             <option v-for="p in profiles" :key="p.id" :value="p.id">{{ p.name }}</option>
@@ -54,13 +54,13 @@ const handleDelete = async (id: string) => {
 
       <!-- Photo grid -->
       <div class="lg:col-span-3">
-        <div v-if="loading && !photos.length" class="text-center py-20 text-gray-400">
+        <div v-if="loading && !photos.length" class="text-center py-20 text-neutral-500">
           Loading photos...
         </div>
 
         <div v-else-if="!photos.length" class="text-center py-20">
           <span class="text-5xl">🖼️</span>
-          <p class="text-gray-400 mt-3">No photos yet. Upload the first one!</p>
+          <p class="text-neutral-500 mt-3">No photos yet. Upload the first one!</p>
         </div>
 
         <div v-else class="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -87,13 +87,13 @@ const handleDelete = async (id: string) => {
       >
         <div
           v-if="lightbox"
-          class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
+          class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
           @click="lightbox = null"
         >
-          <button class="absolute top-4 right-4 text-white text-3xl hover:scale-110 transition-transform">&times;</button>
-          <div class="max-w-4xl max-h-[90vh] relative" @click.stop>
+          <button class="absolute top-4 right-4 text-white/60 text-3xl hover:text-white hover:scale-110 transition-all duration-300">&times;</button>
+          <div class="max-w-4xl max-h-[90vh] relative animate-fade-in" @click.stop>
             <img :src="lightbox.url" :alt="lightbox.caption" class="max-w-full max-h-[85vh] rounded-xl object-contain" />
-            <p v-if="lightbox.caption" class="text-white text-center mt-3">{{ lightbox.caption }}</p>
+            <p v-if="lightbox.caption" class="text-neutral-300 text-center mt-3">{{ lightbox.caption }}</p>
           </div>
         </div>
       </Transition>

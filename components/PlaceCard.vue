@@ -20,30 +20,33 @@ defineEmits<{
 }>()
 
 const userId = useUserId()
+const { isAdmin } = useAuth()
 </script>
 
 <template>
-  <div class="card-fun">
-    <div class="aspect-video bg-gradient-to-br from-pink-200 to-orange-200 relative overflow-hidden">
+  <div class="card-fun group">
+    <div class="aspect-video bg-white/[0.03] relative overflow-hidden">
       <img
         v-if="place.image_url"
         :src="place.image_url"
         :alt="place.name"
-        class="w-full h-full object-cover"
+        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
       />
       <div v-else class="flex items-center justify-center h-full text-4xl">📍</div>
+      <!-- Gradient overlay -->
+      <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent"></div>
     </div>
     <div class="p-4">
-      <h3 class="font-heading font-bold text-lg text-gray-800">{{ place.name }}</h3>
-      <p class="text-gray-500 text-sm mt-1 line-clamp-2">{{ place.description }}</p>
-      <div class="flex items-center justify-between mt-3">
-        <span class="text-xs text-gray-400">
+      <h3 class="font-heading font-bold text-lg text-white">{{ place.name }}</h3>
+      <p class="text-neutral-400 text-sm mt-1 line-clamp-2">{{ place.description }}</p>
+      <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.06]">
+        <span class="text-xs text-neutral-600">
           by {{ place.profiles?.name || 'Unknown' }}
         </span>
         <div class="flex items-center gap-2">
           <button
-            v-if="userId === place.added_by"
-            class="text-xs text-red-400 hover:text-red-600 transition-colors"
+            v-if="userId === place.added_by || isAdmin"
+            class="text-xs text-red-400/60 hover:text-red-400 transition-colors"
             @click="$emit('delete', place.id)"
           >
             Delete

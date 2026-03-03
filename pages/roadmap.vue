@@ -1,34 +1,29 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
 
-// Example itinerary — you can make this dynamic from Supabase later
 const itinerary = [
-  { day: 1, city: 'Sofia', notes: 'Arrive, explore the capital, Vitosha Boulevard', lat: 42.6977, lng: 23.3219 },
-  { day: 2, city: 'Plovdiv', notes: 'Old Town, Roman Theatre, Kapana district', lat: 42.1354, lng: 24.7453 },
-  { day: 3, city: 'Veliko Tarnovo', notes: 'Tsarevets Fortress, medieval vibes', lat: 43.0757, lng: 25.6172 },
-  { day: 4, city: 'Varna', notes: 'Beach day! Sea Garden, nightlife', lat: 43.2141, lng: 27.9147 },
-  { day: 5, city: 'Nessebar', notes: 'UNESCO old town, coastal beauty', lat: 42.6592, lng: 27.7356 },
-  { day: 6, city: 'Sozopol', notes: 'Chill beach town, seafood', lat: 42.4175, lng: 27.6953 },
-  { day: 7, city: 'Bansko', notes: 'Mountain town, hot springs, hiking', lat: 41.8381, lng: 23.4879 },
-  { day: 8, city: 'Rila Monastery', notes: 'Stunning UNESCO monastery, then back to Sofia', lat: 42.1337, lng: 23.3406 },
+  { day: 1, city: 'Prague', notes: 'Pack up, hit the road! Heading south through Czechia', emoji: '🏰' },
+  { day: 2, city: 'Vienna', notes: 'Quick stop -- Schnitzel, Danube vibes, maybe Prater', emoji: '🎡' },
+  { day: 3, city: 'Budapest', notes: 'Ruin bars, thermal baths, goulash. Cross into Romania', emoji: '🛁' },
+  { day: 4, city: 'Romania', notes: 'Transylvania drive -- Carpathian mountains, castles, wild roads', emoji: '🏔️' },
+  { day: 5, city: 'Bucharest', notes: 'Romanian capital -- Palace of Parliament, Old Town nightlife', emoji: '🏛️' },
+  { day: 6, city: 'Veliko Tarnovo', notes: 'Cross into Bulgaria! Tsarevets Fortress, medieval vibes', emoji: '🏰' },
+  { day: 7, city: 'Plovdiv', notes: 'Old Town, Roman Theatre, Kapana district, good food', emoji: '🎭' },
+  { day: 8, city: 'Sozopol', notes: 'Black Sea coast -- beach town, fresh seafood, chill', emoji: '🏖️' },
+  { day: 9, city: 'Primorsko', notes: 'Final destination! Beach, relax, celebrate the journey', emoji: '🌊' },
+  { day: 10, city: 'Primorsko', notes: 'Last day -- soak it in, pack up, homeward bound', emoji: '🚗' },
 ]
-
-const markers = itinerary.map(stop => ({
-  lat: stop.lat,
-  lng: stop.lng,
-  title: stop.city,
-}))
 </script>
 
 <template>
   <div class="page-container">
     <h1 class="page-title">🗺️ Roadmap</h1>
-    <p class="page-subtitle">Our epic route through Bulgaria</p>
+    <p class="page-subtitle">Prague to Primorsko -- our epic route across Europe</p>
 
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
       <!-- Map -->
       <div class="lg:col-span-3">
-        <GoogleMap :markers="markers" :zoom="7" />
+        <GoogleMap />
       </div>
 
       <!-- Timeline -->
@@ -37,22 +32,23 @@ const markers = itinerary.map(stop => ({
           <div
             v-for="(stop, i) in itinerary"
             :key="stop.day"
-            class="relative pl-8 pb-6"
-            :class="{ 'border-l-2 border-pink-200': i < itinerary.length - 1 }"
+            class="relative pl-10 pb-6"
+            :class="{ 'timeline-line': i < itinerary.length - 1 }"
           >
             <!-- Dot -->
-            <div class="absolute -left-2.5 top-0 w-5 h-5 rounded-full gradient-bg shadow-md flex items-center justify-center">
-              <span class="text-[8px] text-white font-bold">{{ stop.day }}</span>
+            <div class="absolute -left-3 top-0 w-6 h-6 rounded-full bg-white/10 shadow-lg shadow-white/5 flex items-center justify-center ring-4 ring-white/[0.05] border border-white/20">
+              <span class="text-[9px] text-neutral-300 font-bold">{{ stop.day }}</span>
             </div>
 
-            <div class="card p-4 ml-2">
+            <div class="card-accent p-4 ml-2 group hover:shadow-glass-lg transition-all duration-300">
               <div class="flex items-center gap-2 mb-1">
-                <span class="px-2 py-0.5 rounded-full text-xs font-bold gradient-bg text-white">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/10 text-neutral-300 border border-white/10">
                   Day {{ stop.day }}
                 </span>
-                <h3 class="font-heading font-bold text-gray-800">{{ stop.city }}</h3>
+                <span class="text-lg">{{ stop.emoji }}</span>
+                <h3 class="font-heading font-bold text-white">{{ stop.city }}</h3>
               </div>
-              <p class="text-sm text-gray-500">{{ stop.notes }}</p>
+              <p class="text-sm text-neutral-500">{{ stop.notes }}</p>
             </div>
           </div>
         </div>

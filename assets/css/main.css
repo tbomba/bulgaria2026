@@ -5,55 +5,215 @@
 @layer base {
   body {
     font-family: 'Inter', sans-serif;
+    color: #e0ddd8;
+    background: #0c0b0f;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Nunito', sans-serif;
   }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
 }
 
 @layer components {
+  /* ===== BUTTONS ===== */
   .btn-primary {
-    @apply bg-gradient-to-r from-pink-500 to-orange-400 text-white font-semibold
-           py-2.5 px-6 rounded-full shadow-lg hover:shadow-xl
-           transition-all duration-200 hover:scale-105 active:scale-95;
+    @apply bg-white/10 text-white font-semibold
+           py-2.5 px-6 rounded-full
+           border border-white/20
+           shadow-lg shadow-white/5
+           hover:bg-white/15 hover:border-white/30
+           transition-all duration-300 hover:scale-105 active:scale-95
+           relative overflow-hidden backdrop-blur-sm;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+  .btn-primary:hover::after {
+    transform: translateX(100%);
   }
 
   .btn-secondary {
-    @apply bg-white text-gray-700 font-semibold py-2.5 px-6 rounded-full
-           shadow-md hover:shadow-lg border border-gray-200
-           transition-all duration-200 hover:scale-105 active:scale-95;
+    @apply bg-white/5 backdrop-blur-md text-neutral-300 font-semibold py-2.5 px-6 rounded-full
+           shadow-lg shadow-black/20 border border-white/10
+           transition-all duration-300 hover:scale-105 active:scale-95
+           hover:bg-white/10 hover:border-white/20;
   }
 
+  /* ===== CARDS — Dark Glassmorphism ===== */
   .card {
-    @apply bg-white rounded-2xl shadow-md hover:shadow-lg
-           transition-all duration-200 overflow-hidden;
+    @apply bg-white/[0.04] backdrop-blur-xl rounded-2xl shadow-glass
+           border border-white/[0.08]
+           transition-all duration-300 overflow-hidden;
   }
 
   .card-fun {
-    @apply bg-white rounded-2xl shadow-md hover:shadow-xl
+    @apply bg-white/[0.04] backdrop-blur-xl rounded-2xl shadow-glass
+           border border-white/[0.08]
            transition-all duration-300 overflow-hidden
-           hover:-translate-y-1;
+           hover:shadow-glass-lg hover:-translate-y-1.5
+           hover:bg-white/[0.07] hover:border-white/[0.15];
   }
 
+  .card-dark {
+    @apply bg-white/[0.03] backdrop-blur-xl rounded-2xl shadow-glass-lg
+           border border-white/[0.06]
+           transition-all duration-300 overflow-hidden text-neutral-200;
+  }
+
+  .card-accent {
+    @apply bg-white/[0.05] backdrop-blur-xl rounded-2xl shadow-glass
+           border border-white/[0.1]
+           transition-all duration-300 overflow-hidden
+           hover:shadow-glass-lg hover:-translate-y-1;
+  }
+
+  /* ===== TILE GLOW ON HOVER ===== */
+  .tile-glow {
+    --glow: 255, 255, 255;
+  }
+  .tile-glow:hover {
+    border-color: rgba(var(--glow), 0.25);
+    box-shadow: 0 0 30px rgba(var(--glow), 0.08),
+                0 0 60px rgba(var(--glow), 0.04),
+                0 8px 32px rgba(0, 0, 0, 0.3);
+    background: rgba(var(--glow), 0.04);
+  }
+
+  /* ===== TYPOGRAPHY ===== */
   .gradient-text {
-    @apply bg-gradient-to-r from-pink-500 via-orange-400 to-yellow-400
+    @apply bg-gradient-to-r from-white via-purple-200 to-blue-300
+           bg-clip-text text-transparent;
+  }
+
+  .gradient-text-light {
+    @apply bg-gradient-to-r from-neutral-300 via-purple-300 to-blue-400
            bg-clip-text text-transparent;
   }
 
   .gradient-bg {
-    @apply bg-gradient-to-br from-pink-500 via-orange-400 to-yellow-400;
+    @apply bg-gradient-to-br from-white/15 to-white/5;
   }
 
+  /* ===== PAGE LAYOUT ===== */
   .page-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+    @apply max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8;
   }
 
   .page-title {
-    @apply text-3xl sm:text-4xl font-extrabold gradient-text mb-2;
+    @apply text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-1 sm:mb-2 tracking-tight;
   }
 
   .page-subtitle {
-    @apply text-gray-500 text-lg mb-8;
+    @apply text-neutral-500 text-sm sm:text-lg mb-5 sm:mb-8;
+  }
+
+  /* ===== FORM INPUTS — Dark Glassmorphism ===== */
+  .input-glass {
+    @apply w-full px-4 py-2.5 rounded-xl
+           bg-white/[0.05] backdrop-blur-sm
+           border border-white/[0.1]
+           focus:ring-2 focus:ring-white/20 focus:border-white/20
+           focus:bg-white/[0.08]
+           outline-none transition-all duration-200
+           placeholder:text-neutral-600 text-neutral-200;
+  }
+
+  /* ===== DARK SECTIONS ===== */
+  .section-dark {
+    @apply bg-black/40 text-neutral-200 relative overflow-hidden
+           border-t border-white/[0.05];
+  }
+
+  .section-dark::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(255, 255, 255, 0.01) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* ===== ANIMATED DARK BACKGROUND ===== */
+  .dark-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(ellipse at 50% 0%, #1a181f 0%, #0c0b0f 60%, #080710 100%);
+  }
+
+  /* ===== TOPOGRAPHIC MAP PATTERN ===== */
+  .topo-pattern {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cpath d='M200 50c80 0 150 70 150 150s-70 150-150 150S50 280 50 200 120 50 200 50z' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M200 80c65 0 120 55 120 120s-55 120-120 120S80 265 80 200 135 80 200 80z' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M200 110c50 0 90 40 90 90s-40 90-90 90-90-40-90-90 40-90 90-90z' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M200 140c33 0 60 27 60 60s-27 60-60 60-60-27-60-60 27-60 60-60z' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M200 165c20 0 35 15 35 35s-15 35-35 35-35-15-35-35 15-35 35-35z' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M40 300c50-30 100-60 160-40s120 50 170 20' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M20 350c60-40 120-70 180-50s130 40 180 10' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M60 30c40 30 90 50 150 30s110-40 160-10' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3C/svg%3E");
+    background-size: 400px 400px;
+  }
+
+  /* ===== GRAIN TEXTURE OVERLAY ===== */
+  .grain-overlay {
+    position: fixed;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.03;
+    animation: grain 8s steps(10) infinite;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  /* ===== ANIMATED BLOB ===== */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    will-change: transform;
+  }
+
+  /* ===== TIMELINE ===== */
+  .timeline-line {
+    position: relative;
+  }
+  .timeline-line::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+  }
+
+  /* ===== REDUCED MOTION ===== */
+  @media (prefers-reduced-motion: reduce) {
+    .blob,
+    .grain-overlay {
+      animation: none !important;
+    }
   }
 }

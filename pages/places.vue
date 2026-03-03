@@ -53,19 +53,19 @@ const handleSubmit = async () => {
           type="text"
           placeholder="Place name"
           required
-          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none"
+          class="input-glass"
         />
         <textarea
           v-model="form.description"
           placeholder="Why should we visit?"
           rows="2"
-          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none resize-none"
+          class="input-glass resize-none"
         />
         <input
           v-model="form.image_url"
           type="url"
           placeholder="Image URL (optional)"
-          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none"
+          class="input-glass"
         />
         <button type="submit" class="btn-primary" :disabled="submitting">
           {{ submitting ? 'Adding...' : 'Add Place' }}
@@ -74,14 +74,14 @@ const handleSubmit = async () => {
     </Transition>
 
     <!-- Loading -->
-    <div v-if="loading && !places.length" class="text-center py-20 text-gray-400">
+    <div v-if="loading && !places.length" class="text-center py-20 text-neutral-500">
       Loading places...
     </div>
 
     <!-- Empty -->
     <div v-else-if="!places.length" class="text-center py-20">
       <span class="text-5xl">🏖️</span>
-      <p class="text-gray-400 mt-3">No places yet. Be the first to add one!</p>
+      <p class="text-neutral-500 mt-3">No places yet. Be the first to add one!</p>
     </div>
 
     <!-- Grid -->

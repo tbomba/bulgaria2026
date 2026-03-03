@@ -34,20 +34,23 @@ const isTrip = computed(() => {
 
 <template>
   <div class="text-center">
-    <div v-if="isTrip" class="text-2xl font-heading font-extrabold text-fun-green animate-bounce-slow">
+    <div v-if="isTrip" class="text-lg sm:text-2xl font-heading font-extrabold text-white animate-bounce-slow">
       🎉 THE TRIP IS HAPPENING NOW! 🎉
     </div>
-    <div v-else-if="timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0" class="text-xl font-heading font-bold text-gray-400">
+    <div v-else-if="timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0" class="text-base sm:text-xl font-heading font-bold text-neutral-500">
       Trip has ended! What a ride 🚗💨
     </div>
-    <div v-else class="flex justify-center gap-3 sm:gap-6">
+    <div v-else class="flex justify-center gap-2.5 sm:gap-4 lg:gap-8">
       <div v-for="(value, key) in timeLeft" :key="key" class="flex flex-col items-center">
-        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl gradient-bg flex items-center justify-center shadow-lg">
-          <span class="text-2xl sm:text-3xl font-heading font-extrabold text-white">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-28 lg:h-28 rounded-2xl sm:rounded-3xl bg-white/[0.06] flex items-center justify-center
+                    shadow-glass backdrop-blur-sm
+                    border border-white/[0.1] relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-white/[0.08] to-transparent"></div>
+          <span class="text-2xl sm:text-3xl lg:text-5xl font-heading font-extrabold text-white relative z-10 tabular-nums">
             {{ String(value).padStart(2, '0') }}
           </span>
         </div>
-        <span class="text-xs sm:text-sm text-gray-500 mt-1.5 font-medium capitalize">{{ key }}</span>
+        <span class="text-[10px] sm:text-xs lg:text-sm text-neutral-500 mt-1.5 sm:mt-2 font-semibold uppercase tracking-wider">{{ key }}</span>
       </div>
     </div>
   </div>

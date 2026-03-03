@@ -20,6 +20,7 @@ defineEmits<{
 }>()
 
 const userId = useUserId()
+const { isAdmin } = useAuth()
 </script>
 
 <template>
@@ -30,8 +31,8 @@ const userId = useUserId()
         <button
           class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200"
           :class="proposal.user_vote === 1
-            ? 'bg-green-100 text-green-600'
-            : 'bg-gray-100 text-gray-400 hover:bg-green-50 hover:text-green-500'"
+            ? 'bg-white/15 text-white shadow-sm shadow-white/10 backdrop-blur-sm border border-white/20'
+            : 'bg-white/[0.04] backdrop-blur-sm text-neutral-500 border border-white/[0.08] hover:bg-white/[0.08] hover:text-neutral-300'"
           :disabled="loading"
           @click="$emit('upvote', proposal.id)"
         >
@@ -40,17 +41,17 @@ const userId = useUserId()
           </svg>
         </button>
         <span class="font-heading font-bold text-lg" :class="{
-          'text-green-600': proposal.vote_total > 0,
-          'text-red-500': proposal.vote_total < 0,
-          'text-gray-400': proposal.vote_total === 0,
+          'text-white': proposal.vote_total > 0,
+          'text-neutral-500': proposal.vote_total < 0,
+          'text-neutral-600': proposal.vote_total === 0,
         }">
           {{ proposal.vote_total }}
         </span>
         <button
           class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200"
           :class="proposal.user_vote === -1
-            ? 'bg-red-100 text-red-600'
-            : 'bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500'"
+            ? 'bg-white/15 text-neutral-300 shadow-sm shadow-white/10 backdrop-blur-sm border border-white/20'
+            : 'bg-white/[0.04] backdrop-blur-sm text-neutral-500 border border-white/[0.08] hover:bg-white/[0.08] hover:text-neutral-300'"
           :disabled="loading"
           @click="$emit('downvote', proposal.id)"
         >
@@ -62,15 +63,15 @@ const userId = useUserId()
 
       <!-- Content -->
       <div class="flex-1 min-w-0">
-        <h3 class="font-heading font-bold text-lg text-gray-800">{{ proposal.title }}</h3>
-        <p class="text-gray-500 text-sm mt-1">{{ proposal.description }}</p>
+        <h3 class="font-heading font-bold text-lg text-white">{{ proposal.title }}</h3>
+        <p class="text-neutral-400 text-sm mt-1">{{ proposal.description }}</p>
         <div class="flex items-center justify-between mt-3">
-          <span class="text-xs text-gray-400">
+          <span class="text-xs text-neutral-600">
             by {{ proposal.profiles?.name || 'Unknown' }}
           </span>
           <button
-            v-if="userId === proposal.proposed_by"
-            class="text-xs text-red-400 hover:text-red-600 transition-colors"
+            v-if="userId === proposal.proposed_by || isAdmin"
+            class="text-xs text-red-400/60 hover:text-red-400 transition-colors"
             @click="$emit('delete', proposal.id)"
           >
             Delete

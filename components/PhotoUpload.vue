@@ -59,11 +59,11 @@ const upload = async () => {
 
 <template>
   <div class="card p-5">
-    <h3 class="font-heading font-bold text-lg mb-3">📸 Upload a Photo</h3>
+    <h3 class="font-heading font-bold text-lg mb-4 text-white">📸 Upload a Photo</h3>
 
     <div
       v-if="preview"
-      class="mb-3 rounded-xl overflow-hidden aspect-video bg-gray-100"
+      class="mb-3 rounded-xl overflow-hidden aspect-video bg-white/[0.03]"
     >
       <img :src="preview" alt="Preview" class="w-full h-full object-cover" />
     </div>
@@ -73,10 +73,10 @@ const upload = async () => {
         ref="fileInput"
         type="file"
         accept="image/*"
-        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+        class="block w-full text-sm text-neutral-400 file:mr-4 file:py-2 file:px-4
                file:rounded-full file:border-0 file:text-sm file:font-semibold
-               file:bg-pink-50 file:text-pink-600 hover:file:bg-pink-100
-               cursor-pointer"
+               file:bg-white/10 file:text-neutral-300 hover:file:bg-white/15
+               file:backdrop-blur-sm cursor-pointer"
         @change="onFileSelect"
       />
 
@@ -84,7 +84,7 @@ const upload = async () => {
         v-model="caption"
         type="text"
         placeholder="Add a caption..."
-        class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none text-sm"
+        class="input-glass"
       />
 
       <button

@@ -49,13 +49,13 @@ const handleSubmit = async () => {
           type="text"
           placeholder="What's your proposal?"
           required
-          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none"
+          class="input-glass"
         />
         <textarea
           v-model="form.description"
           placeholder="Tell us more about it..."
           rows="3"
-          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none resize-none"
+          class="input-glass resize-none"
         />
         <button type="submit" class="btn-primary" :disabled="submitting">
           {{ submitting ? 'Adding...' : 'Submit Proposal' }}
@@ -63,13 +63,13 @@ const handleSubmit = async () => {
       </form>
     </Transition>
 
-    <div v-if="loading && !proposals.length" class="text-center py-20 text-gray-400">
+    <div v-if="loading && !proposals.length" class="text-center py-20 text-neutral-500">
       Loading proposals...
     </div>
 
     <div v-else-if="!proposals.length" class="text-center py-20">
       <span class="text-5xl">🤔</span>
-      <p class="text-gray-400 mt-3">No proposals yet. Suggest something fun!</p>
+      <p class="text-neutral-500 mt-3">No proposals yet. Suggest something fun!</p>
     </div>
 
     <div v-else class="max-w-2xl mx-auto space-y-4">

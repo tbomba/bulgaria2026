@@ -21,11 +21,9 @@ const submit = async () => {
       await signIn(email.value, password.value)
     } else {
       await signUp(email.value, password.value, name.value)
-      error.value = 'Check your email to confirm your account!'
-      loading.value = false
-      return
+      await signIn(email.value, password.value)
     }
-    navigateTo('/')
+    await navigateTo('/', { replace: true, external: true })
   } catch (e: any) {
     error.value = e.message
   } finally {
@@ -35,55 +33,55 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="w-full max-w-md">
-    <div class="text-center mb-8">
-      <h1 class="text-5xl font-heading font-extrabold text-white mb-2 animate-float">
+  <div class="w-full max-w-md px-2">
+    <div class="text-center mb-6 sm:mb-8">
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-heading font-extrabold text-white mb-2 animate-float tracking-tight">
         🇧🇬 Bulgaria 2026
       </h1>
-      <p class="text-white/80 text-lg">The ultimate road trip adventure!</p>
+      <p class="text-neutral-400 text-sm sm:text-lg">Prague to Primorsko -- the ultimate road trip!</p>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-2xl p-8">
-      <h2 class="font-heading font-bold text-2xl text-gray-800 text-center mb-6">
+    <div class="bg-white/[0.05] backdrop-blur-2xl rounded-2xl sm:rounded-3xl shadow-glass-lg border border-white/[0.1] p-5 sm:p-8">
+      <h2 class="font-heading font-bold text-2xl text-white text-center mb-6">
         {{ mode === 'login' ? 'Welcome Back!' : 'Join the Crew!' }}
       </h2>
 
       <form class="space-y-4" @submit.prevent="submit">
         <div v-if="mode === 'signup'">
-          <label class="block text-sm font-medium text-gray-600 mb-1">Your Name</label>
+          <label class="block text-sm font-medium text-neutral-400 mb-1">Your Name</label>
           <input
             v-model="name"
             type="text"
             placeholder="What should we call you?"
             required
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none"
+            class="input-glass !py-3"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-600 mb-1">Email</label>
+          <label class="block text-sm font-medium text-neutral-400 mb-1">Email</label>
           <input
             v-model="email"
             type="email"
             placeholder="your@email.com"
             required
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none"
+            class="input-glass !py-3"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-600 mb-1">Password</label>
+          <label class="block text-sm font-medium text-neutral-400 mb-1">Password</label>
           <input
             v-model="password"
             type="password"
             placeholder="••••••••"
             required
             minlength="6"
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none"
+            class="input-glass !py-3"
           />
         </div>
 
-        <p v-if="error" class="text-sm text-center" :class="error.includes('Check') ? 'text-green-600' : 'text-red-500'">
+        <p v-if="error" class="text-sm text-center" :class="error.includes('Check') ? 'text-green-400' : 'text-red-400'">
           {{ error }}
         </p>
 
@@ -96,9 +94,9 @@ const submit = async () => {
         </button>
       </form>
 
-      <p class="text-center text-sm text-gray-500 mt-4">
+      <p class="text-center text-sm text-neutral-500 mt-4">
         <button
-          class="text-pink-500 font-semibold hover:underline"
+          class="text-neutral-300 font-semibold hover:underline"
           @click="mode = mode === 'login' ? 'signup' : 'login'; error = ''"
         >
           {{ mode === 'login' ? 'Need an account? Sign up' : 'Already have an account? Log in' }}

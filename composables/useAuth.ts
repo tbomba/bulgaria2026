@@ -10,7 +10,8 @@ export const useAuth = () => {
   const user = useSupabaseUser()
   const userId = useUserId()
 
-  const profile = useState<{ id: string; name: string; avatar_url: string | null } | null>('profile', () => null)
+  const profile = useState<{ id: string; name: string; avatar_url: string | null; is_admin?: boolean } | null>('profile', () => null)
+  const isAdmin = computed(() => profile.value?.is_admin === true)
 
   const fetchProfile = async () => {
     if (!userId.value) {
@@ -60,6 +61,7 @@ export const useAuth = () => {
   return {
     user,
     userId,
+    isAdmin,
     profile,
     fetchProfile,
     signIn,

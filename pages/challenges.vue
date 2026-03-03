@@ -58,22 +58,22 @@ const medals = ['🥇', '🥈', '🥉']
               type="text"
               placeholder="Challenge title"
               required
-              class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none"
+              class="input-glass"
             />
             <textarea
               v-model="form.description"
               placeholder="Describe the challenge..."
               rows="2"
-              class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none resize-none"
+              class="input-glass resize-none"
             />
             <div class="flex items-center gap-3">
-              <label class="text-sm text-gray-600 font-medium">Points:</label>
+              <label class="text-sm text-neutral-400 font-medium">Points:</label>
               <input
                 v-model.number="form.points"
                 type="number"
                 min="1"
                 max="100"
-                class="w-24 px-3 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 focus:border-pink-300 outline-none"
+                class="input-glass !w-24"
               />
             </div>
             <button type="submit" class="btn-primary" :disabled="submitting">
@@ -82,13 +82,13 @@ const medals = ['🥇', '🥈', '🥉']
           </form>
         </Transition>
 
-        <div v-if="loading && !challenges.length" class="text-center py-20 text-gray-400">
+        <div v-if="loading && !challenges.length" class="text-center py-20 text-neutral-500">
           Loading challenges...
         </div>
 
         <div v-else-if="!challenges.length" class="text-center py-20">
           <span class="text-5xl">🎯</span>
-          <p class="text-gray-400 mt-3">No challenges yet. Create the first one!</p>
+          <p class="text-neutral-500 mt-3">No challenges yet. Create the first one!</p>
         </div>
 
         <ChallengeCard
@@ -104,10 +104,10 @@ const medals = ['🥇', '🥈', '🥉']
 
       <!-- Leaderboard -->
       <div>
-        <div class="card p-5 sticky top-20">
-          <h2 class="font-heading font-bold text-xl text-gray-800 mb-4">🏅 Leaderboard</h2>
+        <div class="card-dark p-5 sticky top-20">
+          <h2 class="font-heading font-bold text-xl text-white mb-4">🏅 Leaderboard</h2>
 
-          <div v-if="!leaderboard.length" class="text-center py-8 text-gray-400 text-sm">
+          <div v-if="!leaderboard.length" class="text-center py-8 text-neutral-500 text-sm">
             Complete challenges to appear here!
           </div>
 
@@ -116,11 +116,11 @@ const medals = ['🥇', '🥈', '🥉']
               v-for="(entry, i) in leaderboard"
               :key="entry.user_id"
               class="flex items-center gap-3 p-3 rounded-xl"
-              :class="i === 0 ? 'bg-yellow-50' : i === 1 ? 'bg-gray-50' : i === 2 ? 'bg-orange-50' : ''"
+              :class="i === 0 ? 'bg-white/[0.06]' : i === 1 ? 'bg-white/[0.04]' : i === 2 ? 'bg-white/[0.03]' : 'bg-white/[0.02]'"
             >
               <span class="text-xl w-8 text-center">{{ medals[i] || `#${i + 1}` }}</span>
-              <span class="font-medium text-gray-800 flex-1">{{ entry.name }}</span>
-              <span class="font-heading font-bold gradient-text">{{ entry.points }} pts</span>
+              <span class="font-medium text-neutral-200 flex-1">{{ entry.name }}</span>
+              <span class="font-heading font-bold text-white">{{ entry.points }} pts</span>
             </div>
           </div>
         </div>
