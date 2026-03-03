@@ -10,6 +10,7 @@ const {
   completeChallenge,
   deleteChallenge,
   uncompleteChallenge,
+  updateChallenge,
   setWinner,
 } = useChallenges();
 
@@ -147,6 +148,7 @@ const medals = ["🥇", "🥈", "🥉"];
           :user-team-color="userTeam?.color"
           @complete="handleComplete"
           @uncomplete="uncompleteChallenge"
+          @update="(id, updates) => updateChallenge(id, updates)"
           @delete="deleteChallenge"
           @set-winner="(cId, tId) => setWinner(cId, tId)"
         />

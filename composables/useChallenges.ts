@@ -78,6 +78,12 @@ export const useChallenges = () => {
     await fetchChallenges()
   }
 
+  const updateChallenge = async (id: string, updates: { title?: string; description?: string; points?: number; type?: 'solo' | 'team' }) => {
+    const { error } = await supabase.from('challenges').update(updates).eq('id', id)
+    if (error) throw error
+    await fetchChallenges()
+  }
+
   const deleteChallenge = async (id: string) => {
     await supabase.from('challenges').delete().eq('id', id)
     await fetchChallenges()
@@ -92,5 +98,5 @@ export const useChallenges = () => {
     await fetchChallenges()
   }
 
-  return { challenges, leaderboard, loading, fetchChallenges, addChallenge, completeChallenge, uncompleteChallenge, deleteChallenge, setWinner }
+  return { challenges, leaderboard, loading, fetchChallenges, addChallenge, completeChallenge, uncompleteChallenge, updateChallenge, deleteChallenge, setWinner }
 }

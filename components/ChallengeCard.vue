@@ -22,10 +22,25 @@ defineEmits<{
   uncomplete: [id: string]
   delete: [id: string]
   'set-winner': [challengeId: string, teamId: string | null]
+  'update': [id: string, updates: { title: string; description: string; points: number; type: 'solo' | 'team' }]
 }>()
 
 const userId = useUserId()
 const { isAdmin } = useAuth()
+
+const canEdit = computed(() => userId.value === props.challenge.created_by || isAdmin.value)
+const editing = ref(false)
+const editForm = reactive({ title: '', description: '', points: 10, type: 'solo' as 'solo' | 'team' })
+
+const startEdit = () => {
+  Object.assign(editForm, {
+    title: props.challenge.title,
+    description: props.challenge.description,
+    points: props.challenge.points,
+    type: props.challenge.type,
+  })
+  editing.value = true
+}
 
 const hexToRgb = (hex: string) => {
   const r = parseInt(hex.slice(1, 3), 16)
@@ -62,85 +77,157 @@ const glowColor = computed(() => {
       class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-white/20 to-white/5 rounded-l-2xl"
     ></div>
 
-    <div class="flex items-start justify-between pl-3">
-      <div class="flex-1">
-        <div class="flex items-center gap-2 mb-1">
-          <h3 class="font-heading font-bold text-lg text-white">{{ challenge.title }}</h3>
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/10 text-neutral-300 border border-white/10">
-            {{ challenge.points }} b.
-          </span>
-          <span class="text-xs text-neutral-500">
-            {{ challenge.type === 'team' ? '👥 Tým' : '👤 Solo' }}
-          </span>
-        </div>
-        <p class="text-neutral-400 text-sm">{{ challenge.description }}</p>
-      </div>
-      <span v-if="challenge.user_completed" class="text-2xl shrink-0 ml-2 animate-bounce-slow">✅</span>
-    </div>
-
-    <!-- Winner badge -->
-    <div v-if="challenge.winner_team" class="flex items-center gap-2 mt-2 pl-3">
-      <span
-        class="w-3 h-3 rounded-full shrink-0"
-        :style="{ backgroundColor: challenge.winner_team.color }"
-      ></span>
-      <span class="text-xs font-semibold text-neutral-300">
-        Vítěz: {{ challenge.winner_team.name }}
-      </span>
-    </div>
-
-    <div class="mt-3 flex flex-wrap gap-1.5 pl-3">
-      <span
-        v-for="comp in challenge.completions"
-        :key="comp.user_id"
-        class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-white/[0.06] text-neutral-300 rounded-full text-xs font-medium
-               backdrop-blur-sm border border-white/[0.08]"
-      >
-        🏅 {{ comp.profiles?.name || 'Někdo' }}
-      </span>
-    </div>
-
-    <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.06] pl-3">
+    <!-- Edit mode -->
+    <div v-if="editing" class="pl-3 space-y-2">
+      <input
+        v-model="editForm.title"
+        type="text"
+        placeholder="Název výzvy"
+        class="input-glass text-sm"
+      />
+      <textarea
+        v-model="editForm.description"
+        placeholder="Popis výzvy..."
+        rows="2"
+        class="input-glass text-sm resize-none"
+      />
       <div class="flex items-center gap-3">
-        <span class="text-xs text-neutral-600">od {{ challenge.profiles?.name || 'Neznámý' }}</span>
-        <!-- Admin winner dropdown -->
-        <select
-          v-if="isAdmin && teams?.length"
-          class="text-xs bg-white/[0.06] border border-white/[0.1] rounded-lg px-2 py-1 text-neutral-300 outline-none cursor-pointer"
-          :value="challenge.winner_team?.id || ''"
-          @change="$emit('set-winner', challenge.id, ($event.target as HTMLSelectElement).value || null)"
-        >
-          <option value="">Bez vítěze</option>
-          <option v-for="team in teams" :key="team.id" :value="team.id">
-            {{ team.name }}
-          </option>
-        </select>
+        <label class="text-xs text-neutral-400 font-medium">Body:</label>
+        <input
+          v-model.number="editForm.points"
+          type="number"
+          min="1"
+          max="100"
+          class="input-glass text-sm !w-20"
+        />
+        <div class="flex items-center gap-1.5 ml-auto">
+          <button
+            type="button"
+            class="px-2.5 py-1 rounded-full text-xs font-medium transition-all border"
+            :class="editForm.type === 'solo'
+              ? 'bg-white/15 text-white border-white/20'
+              : 'bg-white/[0.04] text-neutral-500 border-white/[0.08]'"
+            @click="editForm.type = 'solo'"
+          >
+            👤 Solo
+          </button>
+          <button
+            type="button"
+            class="px-2.5 py-1 rounded-full text-xs font-medium transition-all border"
+            :class="editForm.type === 'team'
+              ? 'bg-white/15 text-white border-white/20'
+              : 'bg-white/[0.04] text-neutral-500 border-white/[0.08]'"
+            @click="editForm.type = 'team'"
+          >
+            👥 Tým
+          </button>
+        </div>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex gap-2 pt-1">
         <button
-          v-if="userId === challenge.created_by || isAdmin"
-          class="text-xs text-red-400/60 hover:text-red-400 transition-colors"
-          @click="$emit('delete', challenge.id)"
-        >
-          Smazat
-        </button>
-        <button
-          v-if="challenge.user_completed"
-          class="text-xs text-neutral-500 hover:text-neutral-300 transition-colors border border-white/10 rounded-full py-1.5 px-4"
-          :disabled="loading"
-          @click="$emit('uncomplete', challenge.id)"
-        >
-          Zrušit ✅
-        </button>
-        <button
-          v-else
           class="btn-primary text-xs !py-1.5 !px-4"
-          :disabled="loading"
-          @click="$emit('complete', challenge.id)"
+          @click="$emit('update', challenge.id, { ...editForm }); editing = false"
         >
-          Splněno!
+          Uložit
+        </button>
+        <button
+          class="text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
+          @click="editing = false"
+        >
+          Zrušit
         </button>
       </div>
     </div>
+
+    <!-- Display mode -->
+    <template v-else>
+      <div class="flex items-start justify-between pl-3">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <h3 class="font-heading font-bold text-lg text-white">{{ challenge.title }}</h3>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/10 text-neutral-300 border border-white/10">
+              {{ challenge.points }} b.
+            </span>
+            <span class="text-xs text-neutral-500">
+              {{ challenge.type === 'team' ? '👥 Tým' : '👤 Solo' }}
+            </span>
+          </div>
+          <p class="text-neutral-400 text-sm">{{ challenge.description }}</p>
+        </div>
+        <span v-if="challenge.user_completed" class="text-2xl shrink-0 ml-2 animate-bounce-slow">✅</span>
+      </div>
+
+      <!-- Winner badge -->
+      <div v-if="challenge.winner_team" class="flex items-center gap-2 mt-2 pl-3">
+        <span
+          class="w-3 h-3 rounded-full shrink-0"
+          :style="{ backgroundColor: challenge.winner_team.color }"
+        ></span>
+        <span class="text-xs font-semibold text-neutral-300">
+          Vítěz: {{ challenge.winner_team.name }}
+        </span>
+      </div>
+
+      <div class="mt-3 flex flex-wrap gap-1.5 pl-3">
+        <span
+          v-for="comp in challenge.completions"
+          :key="comp.user_id"
+          class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-white/[0.06] text-neutral-300 rounded-full text-xs font-medium
+                 backdrop-blur-sm border border-white/[0.08]"
+        >
+          🏅 {{ comp.profiles?.name || 'Někdo' }}
+        </span>
+      </div>
+
+      <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.06] pl-3">
+        <div class="flex items-center gap-3">
+          <span class="text-xs text-neutral-600">od {{ challenge.profiles?.name || 'Neznámý' }}</span>
+          <!-- Admin winner dropdown -->
+          <select
+            v-if="isAdmin && teams?.length"
+            class="text-xs bg-white/[0.06] border border-white/[0.1] rounded-lg px-2 py-1 text-neutral-300 outline-none cursor-pointer"
+            :value="challenge.winner_team?.id || ''"
+            @change="$emit('set-winner', challenge.id, ($event.target as HTMLSelectElement).value || null)"
+          >
+            <option value="">Bez vítěze</option>
+            <option v-for="team in teams" :key="team.id" :value="team.id">
+              {{ team.name }}
+            </option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            v-if="canEdit"
+            class="text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
+            @click="startEdit"
+          >
+            Upravit
+          </button>
+          <button
+            v-if="canEdit"
+            class="text-xs text-red-400/60 hover:text-red-400 transition-colors"
+            @click="$emit('delete', challenge.id)"
+          >
+            Smazat
+          </button>
+          <button
+            v-if="challenge.user_completed"
+            class="text-xs text-neutral-500 hover:text-neutral-300 transition-colors border border-white/10 rounded-full py-1.5 px-4"
+            :disabled="loading"
+            @click="$emit('uncomplete', challenge.id)"
+          >
+            Zrušit ✅
+          </button>
+          <button
+            v-else
+            class="btn-primary text-xs !py-1.5 !px-4"
+            :disabled="loading"
+            @click="$emit('complete', challenge.id)"
+          >
+            Splněno!
+          </button>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
