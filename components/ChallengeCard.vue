@@ -15,6 +15,7 @@ const props = defineProps<{
   }
   loading?: boolean
   teams?: Array<{ id: string; name: string; color: string }>
+  userTeamId?: string | null
   userTeamColor?: string | null
 }>()
 
@@ -23,7 +24,7 @@ defineEmits<{
   uncomplete: [id: string]
   delete: [id: string]
   'toggle-winner': [challengeId: string, teamId: string]
-  'update': [id: string, updates: { title: string; description: string; points: number; type: 'solo' | 'team'; href: string }]
+  update: [id: string, updates: { title: string; description: string; points: number; type: 'solo' | 'team'; href: string }]
 }>()
 
 const userId = useUserId()
@@ -51,13 +52,34 @@ const hexToRgb = (hex: string) => {
   return `${r}, ${g}, ${b}`
 }
 
-const teamCompleted = computed(() =>
-  props.challenge.type === 'team' && props.challenge.user_completed && !!props.userTeamColor
+// --- Team challenge helpers ---
+const isTeam = computed(() => props.challenge.type === 'team')
+const anyTeamWon = computed(() => props.challenge.winner_teams.length > 0)
+const myTeamWon = computed(() =>
+  isTeam.value && !!props.userTeamId && props.challenge.winner_teams.some(t => t.id === props.userTeamId),
 )
 
+// Show ✅ — solo: user completed; team: user's team won
+const showCheck = computed(() => {
+  if (isTeam.value) return myTeamWon.value
+  return props.challenge.user_completed
+})
+
+// Can click "Splněno!" — solo: not yet completed; team: no winner yet & user is in a team
+const canComplete = computed(() => {
+  if (isTeam.value) return !anyTeamWon.value && !!props.userTeamId
+  return !props.challenge.user_completed
+})
+
+// Can click "Zrušit" — solo: user completed; team: user's team won OR admin
+const canUncomplete = computed(() => {
+  if (isTeam.value) return myTeamWon.value || (isAdmin.value && anyTeamWon.value)
+  return props.challenge.user_completed
+})
+
+// --- Glow style (winner team colors) ---
 const glowStyle = computed(() => {
   const colors = props.challenge.winner_teams.map(t => t.color)
-  if (!colors.length && teamCompleted.value) colors.push(props.userTeamColor!)
   if (!colors.length) return null
 
   if (colors.length === 1) {
@@ -74,7 +96,6 @@ const glowStyle = computed(() => {
     const pct2 = ((i + 1) / colors.length) * 100
     return `${c}18 ${pct1}%, ${c}18 ${pct2}%`
   }).join(', ')
-
   const rgb = hexToRgb(colors[0])
   return {
     borderColor: `rgba(${rgb}, 0.2)`,
@@ -85,7 +106,6 @@ const glowStyle = computed(() => {
 
 const glowHoverStyle = computed(() => {
   const colors = props.challenge.winner_teams.map(t => t.color)
-  if (!colors.length && teamCompleted.value) colors.push(props.userTeamColor!)
   if (!colors.length) return null
 
   if (colors.length === 1) {
@@ -102,7 +122,6 @@ const glowHoverStyle = computed(() => {
     const pct2 = ((i + 1) / colors.length) * 100
     return `${c}28 ${pct1}%, ${c}28 ${pct2}%`
   }).join(', ')
-
   const rgb = hexToRgb(colors[0])
   return {
     borderColor: `rgba(${rgb}, 0.35)`,
@@ -134,40 +153,17 @@ const isHovered = ref(false)
 
     <!-- Edit mode -->
     <div v-if="editing" class="pl-3 space-y-2">
-      <input
-        v-model="editForm.title"
-        type="text"
-        placeholder="Název výzvy"
-        class="input-glass text-sm"
-      />
-      <textarea
-        v-model="editForm.description"
-        placeholder="Popis výzvy..."
-        rows="2"
-        class="input-glass text-sm resize-none"
-      />
-      <input
-        v-model="editForm.href"
-        type="url"
-        placeholder="Odkaz (volitelné)"
-        class="input-glass text-sm"
-      />
+      <input v-model="editForm.title" type="text" placeholder="Název výzvy" class="input-glass text-sm" />
+      <textarea v-model="editForm.description" placeholder="Popis výzvy..." rows="2" class="input-glass text-sm resize-none" />
+      <input v-model="editForm.href" type="url" placeholder="Odkaz (volitelné)" class="input-glass text-sm" />
       <div class="flex items-center gap-3">
         <label class="text-xs text-neutral-400 font-medium">Body:</label>
-        <input
-          v-model.number="editForm.points"
-          type="number"
-          min="1"
-          max="100"
-          class="input-glass text-sm !w-20"
-        />
+        <input v-model.number="editForm.points" type="number" min="1" max="100" class="input-glass text-sm !w-20" />
         <div class="flex items-center gap-1.5 ml-auto">
           <button
             type="button"
             class="px-2.5 py-1 rounded-full text-xs font-medium transition-all border"
-            :class="editForm.type === 'solo'
-              ? 'bg-white/15 text-white border-white/20'
-              : 'bg-white/[0.04] text-neutral-500 border-white/[0.08]'"
+            :class="editForm.type === 'solo' ? 'bg-white/15 text-white border-white/20' : 'bg-white/[0.04] text-neutral-500 border-white/[0.08]'"
             @click="editForm.type = 'solo'"
           >
             👤 Solo
@@ -175,9 +171,7 @@ const isHovered = ref(false)
           <button
             type="button"
             class="px-2.5 py-1 rounded-full text-xs font-medium transition-all border"
-            :class="editForm.type === 'team'
-              ? 'bg-white/15 text-white border-white/20'
-              : 'bg-white/[0.04] text-neutral-500 border-white/[0.08]'"
+            :class="editForm.type === 'team' ? 'bg-white/15 text-white border-white/20' : 'bg-white/[0.04] text-neutral-500 border-white/[0.08]'"
             @click="editForm.type = 'team'"
           >
             👥 Tým
@@ -185,16 +179,10 @@ const isHovered = ref(false)
         </div>
       </div>
       <div class="flex gap-2 pt-1">
-        <button
-          class="btn-primary text-xs !py-1.5 !px-4"
-          @click="$emit('update', challenge.id, { ...editForm }); editing = false"
-        >
+        <button class="btn-primary text-xs !py-1.5 !px-4" @click="$emit('update', challenge.id, { ...editForm }); editing = false">
           Uložit
         </button>
-        <button
-          class="text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
-          @click="editing = false"
-        >
+        <button class="text-xs text-neutral-500 hover:text-neutral-300 transition-colors" @click="editing = false">
           Zrušit
         </button>
       </div>
@@ -225,10 +213,10 @@ const isHovered = ref(false)
             🔗 {{ challenge.href.replace(/^https?:\/\//, '').slice(0, 40) }}{{ challenge.href.replace(/^https?:\/\//, '').length > 40 ? '...' : '' }}
           </a>
         </div>
-        <span v-if="challenge.user_completed" class="text-2xl shrink-0 ml-2 animate-bounce-slow">✅</span>
+        <span v-if="showCheck" class="text-2xl shrink-0 ml-2 animate-bounce-slow">✅</span>
       </div>
 
-      <!-- Winner badges -->
+      <!-- Winner badges (team challenges) -->
       <div v-if="challenge.winner_teams.length" class="flex flex-wrap items-center gap-2 mt-2 pl-3">
         <span class="text-xs font-semibold text-neutral-400">Vítěz:</span>
         <span
@@ -241,12 +229,12 @@ const isHovered = ref(false)
         </span>
       </div>
 
+      <!-- Completion badges -->
       <div class="mt-3 flex flex-wrap gap-1.5 pl-3">
         <span
           v-for="comp in challenge.completions"
           :key="comp.user_id"
-          class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-white/[0.06] text-neutral-300 rounded-full text-xs font-medium
-                 backdrop-blur-sm border border-white/[0.08]"
+          class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-white/[0.06] text-neutral-300 rounded-full text-xs font-medium backdrop-blur-sm border border-white/[0.08]"
         >
           🏅 {{ comp.profiles?.name || 'Někdo' }}
         </span>
@@ -255,8 +243,8 @@ const isHovered = ref(false)
       <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/[0.06] pl-3">
         <div class="flex items-center gap-3">
           <span class="text-xs text-neutral-600">od {{ challenge.profiles?.name || 'Neznámý' }}</span>
-          <!-- Admin winner toggles -->
-          <div v-if="isAdmin && teams?.length" class="flex items-center gap-1">
+          <!-- Admin winner toggles (team challenges only) -->
+          <div v-if="isAdmin && isTeam && teams?.length" class="flex items-center gap-1">
             <button
               v-for="team in teams"
               :key="team.id"
@@ -287,22 +275,28 @@ const isHovered = ref(false)
           >
             Smazat
           </button>
+          <!-- Uncomplete -->
           <button
-            v-if="challenge.user_completed"
+            v-if="canUncomplete"
             class="text-xs text-neutral-500 hover:text-neutral-300 transition-colors border border-white/10 rounded-full py-1.5 px-4"
             :disabled="loading"
             @click="$emit('uncomplete', challenge.id)"
           >
             Zrušit ✅
           </button>
+          <!-- Complete -->
           <button
-            v-else
+            v-else-if="canComplete"
             class="btn-primary text-xs !py-1.5 !px-4"
             :disabled="loading"
             @click="$emit('complete', challenge.id)"
           >
             Splněno!
           </button>
+          <!-- Team challenge already won by another team -->
+          <span v-else-if="isTeam && anyTeamWon && !myTeamWon" class="text-xs text-neutral-600 italic">
+            Splněno
+          </span>
         </div>
       </div>
     </template>

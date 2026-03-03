@@ -14,14 +14,21 @@ const {
   toggleWinner,
 } = useChallenges();
 
-const { isAdmin, userTeam } = useAuth();
+const { isAdmin, userTeam, fetchUserTeam } = useAuth();
 const { teams, fetchTeams } = useTeams();
 
 const showForm = ref(false);
-const form = reactive({ title: "", description: "", points: 10, type: "solo" as "solo" | "team", href: "" });
+const form = reactive({
+  title: "",
+  description: "",
+  points: 10,
+  type: "solo" as "solo" | "team",
+  href: "",
+});
 const submitting = ref(false);
 
 onMounted(async () => {
+  if (!userTeam.value) await fetchUserTeam();
   await fetchChallenges();
   if (isAdmin.value) await fetchTeams();
 });
@@ -31,7 +38,13 @@ const handleSubmit = async () => {
   submitting.value = true;
   try {
     await addChallenge({ ...form });
-    Object.assign(form, { title: "", description: "", points: 10, type: "solo", href: "" });
+    Object.assign(form, {
+      title: "",
+      description: "",
+      points: 10,
+      type: "solo",
+      href: "",
+    });
     showForm.value = false;
   } catch (e: any) {
     alert(e.message);
@@ -41,7 +54,11 @@ const handleSubmit = async () => {
 };
 
 const handleComplete = async (id: string) => {
-  await completeChallenge(id);
+  try {
+    await completeChallenge(id);
+  } catch (e: any) {
+    await fetchChallenges();
+  }
 };
 
 const medals = ["🥇", "🥈", "🥉"];
@@ -108,19 +125,23 @@ const medals = ["🥇", "🥈", "🥉"];
               <button
                 type="button"
                 class="px-3 py-1.5 rounded-full text-xs font-medium transition-all border"
-                :class="form.type === 'solo'
-                  ? 'bg-white/15 text-white border-white/20'
-                  : 'bg-white/[0.04] text-neutral-500 border-white/[0.08] hover:bg-white/[0.08]'"
+                :class="
+                  form.type === 'solo'
+                    ? 'bg-white/15 text-white border-white/20'
+                    : 'bg-white/[0.04] text-neutral-500 border-white/[0.08] hover:bg-white/[0.08]'
+                "
                 @click="form.type = 'solo'"
               >
-                👤 Solo
+                👤 Sólo
               </button>
               <button
                 type="button"
                 class="px-3 py-1.5 rounded-full text-xs font-medium transition-all border"
-                :class="form.type === 'team'
-                  ? 'bg-white/15 text-white border-white/20'
-                  : 'bg-white/[0.04] text-neutral-500 border-white/[0.08] hover:bg-white/[0.08]'"
+                :class="
+                  form.type === 'team'
+                    ? 'bg-white/15 text-white border-white/20'
+                    : 'bg-white/[0.04] text-neutral-500 border-white/[0.08] hover:bg-white/[0.08]'
+                "
                 @click="form.type = 'team'"
               >
                 👥 Tým
@@ -151,6 +172,7 @@ const medals = ["🥇", "🥈", "🥉"];
           :challenge="challenge"
           :loading="loading"
           :teams="teams"
+          :user-team-id="userTeam?.id"
           :user-team-color="userTeam?.color"
           @complete="handleComplete"
           @uncomplete="uncompleteChallenge"
