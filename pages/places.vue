@@ -23,6 +23,11 @@ const filteredPlaces = computed(() => {
 
 onMounted(() => fetchPlaces());
 
+const handleDelete = (id: string) => {
+  if (!window.confirm("Opravdu smazat toto místo?")) return;
+  deletePlace(id);
+};
+
 const handleSubmit = async () => {
   if (!form.name.trim()) return;
   submitting.value = true;
@@ -151,7 +156,7 @@ const handleSubmit = async () => {
         :place="place"
         @vote="toggleVote"
         @update="(id, updates) => updatePlace(id, updates)"
-        @delete="(id) => { if (confirm('Opravdu smazat toto místo?')) deletePlace(id) }"
+        @delete="handleDelete"
       />
     </div>
   </div>

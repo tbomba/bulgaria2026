@@ -22,6 +22,11 @@ const handleSubmit = async () => {
     submitting.value = false
   }
 }
+
+const handleDelete = (id: string) => {
+  if (!window.confirm('Opravdu smazat tento návrh?')) return
+  deleteProposal(id)
+}
 </script>
 
 <template>
@@ -81,7 +86,7 @@ const handleSubmit = async () => {
         @upvote="vote($event, 1)"
         @downvote="vote($event, -1)"
         @update="(id, updates) => updateProposal(id, updates)"
-        @delete="(id) => { if (confirm('Opravdu smazat tento návrh?')) deleteProposal(id) }"
+        @delete="handleDelete"
       />
     </div>
   </div>

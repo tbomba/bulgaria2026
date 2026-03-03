@@ -61,6 +61,11 @@ const handleComplete = async (id: string) => {
   }
 };
 
+const handleDelete = (id: string) => {
+  if (!window.confirm("Opravdu smazat tuto výzvu?")) return;
+  deleteChallenge(id);
+};
+
 const medals = ["🥇", "🥈", "🥉"];
 </script>
 
@@ -177,7 +182,7 @@ const medals = ["🥇", "🥈", "🥉"];
           @complete="handleComplete"
           @uncomplete="uncompleteChallenge"
           @update="(id, updates) => updateChallenge(id, updates)"
-          @delete="(id) => { if (confirm('Opravdu smazat tuto výzvu?')) deleteChallenge(id) }"
+          @delete="handleDelete"
           @toggle-winner="(cId, tId) => toggleWinner(cId, tId)"
         />
       </div>

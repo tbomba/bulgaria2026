@@ -25,7 +25,7 @@ watch(filterBy, async (val) => {
 const handleDelete = async (id: string) => {
   const photo = photos.value.find(p => p.id === id)
   if (!photo) return
-  if (!confirm('Smazat tuto fotku?')) return
+  if (!window.confirm('Smazat tuto fotku?')) return
   await deletePhoto(id, photo.url)
 }
 </script>
