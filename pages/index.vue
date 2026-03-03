@@ -136,7 +136,7 @@ const statItems = computed(() => [
       <div
         v-for="stat in statItems"
         :key="stat.label"
-        class="card-accent text-center p-2.5 sm:p-4 flex flex-col items-center justify-center hover:bg-white/[0.08] hover:border-white/[0.15] hover:-translate-y-1 hover:shadow-glass-lg cursor-default"
+        class="card-accent text-center p-2.5 sm:p-4 flex flex-col items-center justify-center"
       >
         <span class="text-lg sm:text-2xl lg:text-3xl">{{ stat.icon }}</span>
         <p

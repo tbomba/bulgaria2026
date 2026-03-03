@@ -80,6 +80,49 @@ const medals = ["🥇", "🥈", "🥉"];
     <p class="page-subtitle">Nejhorší tým hraje mokrej piškot</p>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Leaderboard (shows first on mobile, right column on desktop) -->
+      <div class="order-first lg:order-last">
+        <div class="card-dark p-5 sticky top-20">
+          <h2 class="font-heading font-bold text-xl text-white mb-4">
+            🏅 Žebříček
+          </h2>
+
+          <div
+            v-if="!leaderboard.length"
+            class="text-center py-8 text-neutral-500 text-sm"
+          >
+            Splň výzvy a objevíš se zde!
+          </div>
+
+          <div v-else class="space-y-3">
+            <div
+              v-for="(entry, i) in leaderboard"
+              :key="entry.user_id"
+              class="flex items-center gap-3 p-3 rounded-xl"
+              :class="
+                i === 0
+                  ? 'bg-white/[0.06]'
+                  : i === 1
+                    ? 'bg-white/[0.04]'
+                    : i === 2
+                      ? 'bg-white/[0.03]'
+                      : 'bg-white/[0.02]'
+              "
+            >
+              <span class="text-xl w-8 text-center">{{
+                medals[i] || `#${i + 1}`
+              }}</span>
+              <span class="font-medium text-neutral-200 flex-1">{{
+                entry.name
+              }}</span>
+              <span class="font-heading font-bold text-white"
+                >{{ entry.points }} b.</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Challenges list -->
       <div class="lg:col-span-2 space-y-4">
         <!-- Add form -->
@@ -187,48 +230,6 @@ const medals = ["🥇", "🥈", "🥉"];
         />
       </div>
 
-      <!-- Leaderboard -->
-      <div>
-        <div class="card-dark p-5 sticky top-20">
-          <h2 class="font-heading font-bold text-xl text-white mb-4">
-            🏅 Žebříček
-          </h2>
-
-          <div
-            v-if="!leaderboard.length"
-            class="text-center py-8 text-neutral-500 text-sm"
-          >
-            Splň výzvy a objevíš se zde!
-          </div>
-
-          <div v-else class="space-y-3">
-            <div
-              v-for="(entry, i) in leaderboard"
-              :key="entry.user_id"
-              class="flex items-center gap-3 p-3 rounded-xl"
-              :class="
-                i === 0
-                  ? 'bg-white/[0.06]'
-                  : i === 1
-                    ? 'bg-white/[0.04]'
-                    : i === 2
-                      ? 'bg-white/[0.03]'
-                      : 'bg-white/[0.02]'
-              "
-            >
-              <span class="text-xl w-8 text-center">{{
-                medals[i] || `#${i + 1}`
-              }}</span>
-              <span class="font-medium text-neutral-200 flex-1">{{
-                entry.name
-              }}</span>
-              <span class="font-heading font-bold text-white"
-                >{{ entry.points }} b.</span
-              >
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
